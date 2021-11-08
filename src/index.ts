@@ -1,4 +1,5 @@
 import acto from '@abcnews/alternating-case-to-object';
+import { proxy } from '@abcnews/dev-proxy';
 import { whenDOMReady } from '@abcnews/env-utils';
 import { getMountValue, selectMounts } from '@abcnews/mount-utils';
 import type { Mount } from '@abcnews/mount-utils';
@@ -7,7 +8,7 @@ import App from './components/App/App.svelte';
 let appMountEl: Mount;
 let appProps;
 
-whenDOMReady.then(() => {
+Promise.all([proxy('quote-carousel'), whenDOMReady]).then(() => {
   [appMountEl] = selectMounts('quotecarousel');
 
   if (appMountEl) {
