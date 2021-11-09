@@ -144,7 +144,7 @@
   }
 
   .controls div {
-    min-width: 48px;
+    min-width: 3rem;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02rem;
