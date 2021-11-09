@@ -34,7 +34,7 @@
 <style>
   figure {
     height: 100%;
-    padding: 64px 24px;
+    padding: 32px 24px 64px;
     margin: 0;
     display: flex;
     flex-direction: column;
