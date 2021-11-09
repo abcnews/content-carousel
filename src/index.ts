@@ -1,24 +1,61 @@
-import acto from '@abcnews/alternating-case-to-object';
 import { proxy } from '@abcnews/dev-proxy';
-import { whenDOMReady } from '@abcnews/env-utils';
-import { getMountValue, selectMounts } from '@abcnews/mount-utils';
-import type { Mount } from '@abcnews/mount-utils';
-import App from './components/App/App.svelte';
+import { requestDOMPermit } from '@abcnews/env-utils';
+import QuoteCarousel from './components/QuoteCarousel/QuoteCarousel.svelte';
+import type { QuoteContent } from './components/Quote/types';
 
-let appMountEl: Mount;
-let appProps;
+const createAppFromDecoy = (decoyEl: Element) => {
+  const quotes: QuoteContent[] = [];
 
-Promise.all([proxy('quote-carousel'), whenDOMReady]).then(() => {
-  [appMountEl] = selectMounts('quotecarousel');
+  Array.from(decoyEl.querySelectorAll('blockquote')).forEach((blockquoteEl: Element) => {
+    const contentEls = Array.from(blockquoteEl.children);
+    let attributionNodes: Node[] | undefined = undefined;
 
-  if (appMountEl) {
-    appProps = acto(getMountValue(appMountEl));
-    new App({
-      target: appMountEl,
-      props: appProps
+    contentEls.forEach((contentEl: Element) => {
+      blockquoteEl.removeChild(contentEl);
+      contentEl.removeAttribute('class');
     });
-  }
-});
+
+    const lastContentEl = contentEls[contentEls.length - 1];
+
+    if (contentEls.length > 1 && lastContentEl && lastContentEl.textContent && lastContentEl.textContent.length > 0) {
+      const lastContentElFirstChildEl = lastContentEl.firstElementChild;
+
+      if (
+        lastContentElFirstChildEl &&
+        ['EM', 'STRONG'].includes(lastContentElFirstChildEl.tagName) &&
+        lastContentElFirstChildEl.textContent &&
+        lastContentEl.textContent === lastContentElFirstChildEl.textContent
+      ) {
+        contentEls.pop();
+        attributionNodes = Array.from(lastContentElFirstChildEl.childNodes);
+      }
+    }
+
+    quotes.push({
+      kind: blockquoteEl.hasAttribute('data-component') ? 'blockquote' : 'pullquote',
+      contentEls,
+      attributionNodes
+    });
+  });
+
+  decoyEl.innerHTML = '';
+
+  new QuoteCarousel({
+    target: decoyEl,
+    props: {
+      quotes
+    }
+  });
+};
+
+(async () => {
+  await proxy('quote-carousel');
+  await requestDOMPermit('quotecarousel');
+
+  Array.from(document.querySelectorAll('[data-key="quotecarousel"]')).forEach((decoyEl: Element) =>
+    createAppFromDecoy(decoyEl)
+  );
+})();
 
 if (process.env.NODE_ENV === 'development') {
   console.debug(`[Quote Carousel] public path: ${__webpack_public_path__}`);
