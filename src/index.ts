@@ -1,6 +1,6 @@
 import { proxy } from '@abcnews/dev-proxy';
 import { requestDOMPermit } from '@abcnews/env-utils';
-import QuoteCarousel from './components/QuoteCarousel/QuoteCarousel.svelte';
+import Carousel from './components/Carousel/Carousel.svelte';
 import type { QuoteContent } from './components/Quote/types';
 
 const createAppFromDecoy = (decoyEl: Element) => {
@@ -40,7 +40,7 @@ const createAppFromDecoy = (decoyEl: Element) => {
 
   decoyEl.innerHTML = '';
 
-  new QuoteCarousel({
+  new Carousel({
     target: decoyEl,
     props: {
       quotes
@@ -49,14 +49,14 @@ const createAppFromDecoy = (decoyEl: Element) => {
 };
 
 (async () => {
-  await proxy('quote-carousel');
-  await requestDOMPermit('quotecarousel');
+  await proxy('content-carousel');
+  await requestDOMPermit('carousel');
 
-  Array.from(document.querySelectorAll('[data-key="quotecarousel"]')).forEach((decoyEl: Element) =>
+  Array.from(document.querySelectorAll('[data-key="carousel"]')).forEach((decoyEl: Element) =>
     createAppFromDecoy(decoyEl)
   );
 })();
 
 if (process.env.NODE_ENV === 'development') {
-  console.debug(`[Quote Carousel] public path: ${__webpack_public_path__}`);
+  console.debug(`[Content Carousel] public path: ${__webpack_public_path__}`);
 }

@@ -9,7 +9,7 @@
 
   export let quotes: QuoteContent[] = [];
 
-  let randomID = `quote-carousel-${Math.floor(Math.random() * 1e3)}`;
+  let randomID = `content-carousel-${Math.floor(Math.random() * 1e3)}`;
   let baseWidth: number = 0;
   let xPct: number = 0;
   let activeIndex: number = 0;
