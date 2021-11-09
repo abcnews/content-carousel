@@ -45,8 +45,12 @@
     margin: 0;
   }
 
-  figure[data-kind='blockquote'] figcaption {
-    font-size: 1.125rem;
+  figure blockquote > :global(*) {
+    line-height: 1.5;
+  }
+
+  figure[data-kind='blockquote'] blockquote > :global(*) {
+    font-size: 1rem;
   }
 
   figure[data-kind='pullquote'] blockquote > :global(*) {
