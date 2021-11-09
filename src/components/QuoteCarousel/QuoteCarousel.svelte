@@ -66,7 +66,7 @@
             <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
           </svg>
         </button>
-        <div>{`${activeIndex + 1} / ${quotes.length}`}</div>
+        <div aria-hidden="true">{`${activeIndex + 1} / ${quotes.length}`}</div>
         <button
           aria-controls={`${randomID}_slides`}
           aria-label="Next slide"
@@ -144,6 +144,7 @@
   }
 
   .controls div {
+    min-width: 48px;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02rem;
