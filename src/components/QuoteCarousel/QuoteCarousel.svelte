@@ -86,6 +86,7 @@
   .base {
     position: relative;
     box-sizing: border-box;
+    margin-bottom: 1.5rem;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
