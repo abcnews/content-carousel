@@ -5,7 +5,6 @@ import { parseSlides } from './utils';
 
 const createAppFromDecoy = (decoyEl: Element) => {
   const slides = parseSlides(decoyEl);
-  console.debug(slides);
 
   decoyEl.innerHTML = '';
 
