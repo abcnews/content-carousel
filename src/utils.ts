@@ -38,7 +38,11 @@ export const parseSlides = (el: Element) =>
       let config: ComponentConfig | null;
 
       if (!el.hasAttribute('data-component')) {
-        config = parseSimple(el);
+        if (el.textContent && el.textContent.trim().length > 0) {
+          config = parseSimple(el);
+        } else {
+          config = null;
+        }
       } else {
         switch (el.getAttribute('data-component')) {
           case 'Blockquote':
