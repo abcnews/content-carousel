@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   const MAX_X_BLEED = 64;
   const SLIDE_GAP = 16;
+  const TRANSLATION_PIXELS_PER_SECOND = 2500;
 </script>
 
 <script lang="ts">
@@ -33,7 +34,7 @@
     --cc-x-offset: ${xPct}%;
     --cc-slide-gap: ${SLIDE_GAP}px;
     --cc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
-    --cc-snap-duration: ${isInMultiColumnLayout ? 0.25 : 0.125}s;
+    --cc-snap-duration: ${baseWidth / TRANSLATION_PIXELS_PER_SECOND}s;
     --cc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
   `;
 </script>
