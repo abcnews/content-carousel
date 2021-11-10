@@ -1,4 +1,5 @@
 import { ComponentConfig, Slide } from './components/Carousel/types';
+import { parse as parseImage } from './components/Image/utils';
 import { parse as parseSimple } from './components/Simple/utils';
 import { parse as parseQuote } from './components/Quote/utils';
 
@@ -45,13 +46,24 @@ export const parseSlides = (el: Element) =>
         }
       } else {
         switch (el.getAttribute('data-component')) {
+          case 'Heading':
+            config = parseSimple(el);
+            break;
           case 'Blockquote':
             config = parseQuote(el);
             break;
           case 'Pullquote':
             config = parseQuote(el.querySelector('blockquote') as Element, true);
             break;
+          case 'Figure':
+            if ((el.getAttribute('data-uri') || '').indexOf('coremedia://image') === 0) {
+              config = parseImage(el);
+            } else {
+              config = null;
+            }
+            break;
           default:
+            console.debug('Unsupported content', el);
             config = null;
             break;
         }
