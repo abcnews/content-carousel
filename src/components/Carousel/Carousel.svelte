@@ -21,20 +21,20 @@
   $: maskGradientPct = (xBleed / (baseWidth + xBleed * 2)) * 100;
   $: xPct = (activeIndex + (activeIndex * SLIDE_GAP) / baseWidth) * -100;
   $: styleProps = `
-    --qc-base-width: ${baseWidth}px;
-    --qc-x-bleed: ${xBleed}px;
-    --qc-mask-image: linear-gradient(
+    --cc-base-width: ${baseWidth}px;
+    --cc-x-bleed: ${xBleed}px;
+    --cc-mask-image: linear-gradient(
       to right,
       hsl(0deg 0% 0% / 0),
       hsl(0deg 0% 0% / 1) ${maskGradientPct.toFixed(2)}% ,
       hsl(0deg 0% 0% / 1) ${(100 - maskGradientPct).toFixed(2)}%,
       hsl(0deg 0% 0% / 0)
     );
-    --qc-x-offset: ${xPct}%;
-    --qc-slide-gap: ${SLIDE_GAP}px;
-    --qc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
-    --qc-snap-duration: ${isInMultiColumnLayout ? 0.25 : 0.125}s;
-    --qc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
+    --cc-x-offset: ${xPct}%;
+    --cc-slide-gap: ${SLIDE_GAP}px;
+    --cc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
+    --cc-snap-duration: ${isInMultiColumnLayout ? 0.25 : 0.125}s;
+    --cc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
   `;
 </script>
 
@@ -86,7 +86,7 @@
 
 <style>
   .base {
-    --qc-controls-height: 40px;
+    --cc-controls-height: 40px;
     position: relative;
     box-sizing: border-box;
     margin-bottom: 1.5rem;
@@ -99,19 +99,19 @@
   }
 
   .layout {
-    width: calc(100% + var(--qc-x-bleed) * 2);
-    padding: 0 var(--qc-x-bleed);
-    margin: 0 calc(var(--qc-x-bleed) * -1);
+    width: calc(100% + var(--cc-x-bleed) * 2);
+    padding: 0 var(--cc-x-bleed);
+    margin: 0 calc(var(--cc-x-bleed) * -1);
     overflow: hidden;
-    -webkit-mask-image: var(--qc-mask-image);
-    mask-image: var(--qc-mask-image);
+    -webkit-mask-image: var(--cc-mask-image);
+    mask-image: var(--cc-mask-image);
   }
 
   .slides {
-    transform: translate3d(var(--qc-x-offset), 0, 0);
+    transform: translate3d(var(--cc-x-offset), 0, 0);
     display: flex;
-    gap: var(--qc-slide-gap);
-    transition: transform var(--qc-snap-duration) ease-out;
+    gap: var(--cc-slide-gap);
+    transition: transform var(--cc-snap-duration) ease-out;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -124,13 +124,13 @@
     flex: 0 0 100%;
     margin: 0;
     border-radius: 8px;
-    padding: var(--qc-slide-padding) var(--qc-slide-padding)
-      calc(var(--qc-slide-padding) / 3 + var(--qc-controls-height));
+    padding: var(--cc-slide-padding) var(--cc-slide-padding)
+      calc(var(--cc-slide-padding) / 3 + var(--cc-controls-height));
     min-height: 256px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: var(--qc-theme-slide-bg, var(--tint-6));
+    background-color: var(--cc-theme-slide-bg, var(--tint-6));
     overflow: hidden;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -155,9 +155,9 @@
     width: 100%;
     display: flex;
     gap: 8px;
-    justify-content: var(--qc-controls-justify);
+    justify-content: var(--cc-controls-justify);
     align-items: center;
-    color: var(--qc-theme-controls-fg);
+    color: var(--cc-theme-controls-fg);
     font-size: 1rem;
     font-weight: bold;
   }
@@ -186,14 +186,14 @@
 
   .controls button:not([disabled]):focus,
   .controls button:not([disabled]):hover {
-    color: var(--qc-theme-controls-fg-focus);
-    background-color: var(--qc-theme-controls-bg-focus, var(--tint-5));
+    color: var(--cc-theme-controls-fg-focus);
+    background-color: var(--cc-theme-controls-bg-focus, var(--tint-5));
     cursor: pointer;
   }
 
   .controls svg {
-    width: var(--qc-controls-height);
-    height: var(--qc-controls-height);
+    width: var(--cc-controls-height);
+    height: var(--cc-controls-height);
     vertical-align: bottom;
   }
 
