@@ -114,6 +114,12 @@
     transition: transform var(--qc-snap-duration) ease-out;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .slides {
+      transition-duration: 0s;
+    }
+  }
+
   .slide {
     flex: 0 0 100%;
     margin: 0;
