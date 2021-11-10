@@ -1,51 +1,47 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { QuoteContent } from './types';
 
-  export let quote: QuoteContent;
+  export let kind: 'blockquote' | 'pullquote';
+  export let contentEls: Element[];
+  export let attributionNodes: Node[];
 
   let blockquoteEl: HTMLElement;
   let figcaptionEl: HTMLElement;
 
   onMount(() => {
-    quote.contentEls.forEach(contentEl => blockquoteEl.appendChild(contentEl));
+    contentEls.forEach(contentEl => blockquoteEl.appendChild(contentEl));
 
-    if (quote.attributionNodes) {
-      quote.attributionNodes.forEach(attributionNode => figcaptionEl.appendChild(attributionNode));
+    if (attributionNodes) {
+      attributionNodes.forEach(attributionNode => figcaptionEl.appendChild(attributionNode));
     }
 
     return () => {
-      quote.contentEls.forEach(contentEl => blockquoteEl.removeChild(contentEl));
+      contentEls.forEach(contentEl => blockquoteEl.removeChild(contentEl));
 
-      if (quote.attributionNodes) {
-        quote.attributionNodes.forEach(attributionNode => figcaptionEl.removeChild(attributionNode));
+      if (attributionNodes) {
+        attributionNodes.forEach(attributionNode => figcaptionEl.removeChild(attributionNode));
       }
     };
   });
 </script>
 
-<figure data-kind={quote.kind}>
+<figure data-kind={kind}>
   <blockquote bind:this={blockquoteEl} />
-  {#if quote.attributionNodes}
+  {#if attributionNodes}
     <figcaption bind:this={figcaptionEl} />
   {/if}
 </figure>
 
 <style>
   figure {
-    height: 100%;
-    padding: 32px 24px 64px;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
 
   blockquote {
     margin: 0;
   }
 
-  figure blockquote > :global(*) {
+  blockquote > :global(*) {
     line-height: 1.5;
   }
 

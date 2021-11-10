@@ -4,10 +4,9 @@
 </script>
 
 <script lang="ts">
-  import Quote from '../Quote/Quote.svelte';
-  import type { QuoteContent } from '../Quote/types';
+  import type { Slide } from './types';
 
-  export let quotes: QuoteContent[] = [];
+  export let slides: Slide[] = [];
 
   let randomID = `content-carousel-${Math.floor(Math.random() * 1e3)}`;
   let baseWidth: number = 0;
@@ -33,6 +32,7 @@
     );
     --qc-x-offset: ${xPct}%;
     --qc-slide-gap: ${SLIDE_GAP}px;
+    --qc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
     --qc-snap-duration: ${isInMultiColumnLayout ? 0.25 : 0.125}s;
     --qc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
   `;
@@ -42,16 +42,18 @@
   {#if !Number.isNaN(xBleed)}
     <section class="layout" role="region" aria-roledescription="carousel" aria-label="Slides">
       <div id={`${randomID}_slides`} class="slides" aria-live="polite">
-        {#each quotes as quote, index}
+        {#each slides as slide, index}
           <div
             class="slide"
             role="group"
             aria-roledescription="slide"
-            aria-label={`${index + 1} of ${quotes.length}`}
+            aria-label={`${index + 1} of ${slides.length}`}
             class:is-active={activeIndex === index}
             on:click={() => goToIndex(index)}
           >
-            <Quote {quote} />
+            {#each slide as { component, props }}
+              <svelte:component this={component} {...props} />
+            {/each}
           </div>
         {/each}
       </div>
@@ -66,11 +68,11 @@
             <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
           </svg>
         </button>
-        <div aria-hidden="true">{`${activeIndex + 1} / ${quotes.length}`}</div>
+        <div aria-hidden="true">{`${activeIndex + 1} / ${slides.length}`}</div>
         <button
           aria-controls={`${randomID}_slides`}
           aria-label="Next slide"
-          disabled={activeIndex === quotes.length - 1}
+          disabled={activeIndex === slides.length - 1}
           on:click={() => goToIndex(activeIndex + 1)}
         >
           <svg role="presentation" viewBox="0 0 40 40">
@@ -84,6 +86,7 @@
 
 <style>
   .base {
+    --qc-controls-height: 40px;
     position: relative;
     box-sizing: border-box;
     margin-bottom: 1.5rem;
@@ -113,8 +116,14 @@
 
   .slide {
     flex: 0 0 100%;
-    min-height: 256px;
+    margin: 0;
     border-radius: 8px;
+    padding: var(--qc-slide-padding) var(--qc-slide-padding)
+      calc(var(--qc-slide-padding) / 3 + var(--qc-controls-height));
+    min-height: 256px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background-color: var(--qc-theme-slide-bg, var(--tint-6));
     overflow: hidden;
     -webkit-touch-callout: none;
@@ -128,6 +137,10 @@
 
   .slide.is-active {
     cursor: revert;
+  }
+
+  .slide > :global(*):not(:last-child) {
+    margin-bottom: 1.5rem;
   }
 
   .controls {
@@ -173,8 +186,8 @@
   }
 
   .controls svg {
-    width: 40px;
-    height: 40px;
+    width: var(--qc-controls-height);
+    height: var(--qc-controls-height);
     vertical-align: bottom;
   }
 
