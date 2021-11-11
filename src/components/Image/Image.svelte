@@ -28,7 +28,9 @@
   img {
     width: 100%;
     vertical-align: bottom;
-    aspect-ratio: var(--cc-image-aspect-ratio);
+    /* aspect-ratio: var(--cc-image-aspect-ratio); */
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
     -webkit-user-drag: none;
     user-select: none;
     -moz-user-select: none;
