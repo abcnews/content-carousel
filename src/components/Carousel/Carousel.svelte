@@ -125,8 +125,7 @@
     flex: 0 0 100%;
     margin: 0;
     border-radius: 8px;
-    padding: var(--cc-slide-padding) var(--cc-slide-padding)
-      calc(var(--cc-slide-padding) / 3 + var(--cc-controls-height));
+    padding: var(--cc-slide-padding);
     min-height: 256px;
     display: flex;
     flex-direction: column;
@@ -151,9 +150,7 @@
   }
 
   .controls {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    margin-top: 4px;
     display: flex;
     gap: 8px;
     justify-content: var(--cc-controls-justify);
