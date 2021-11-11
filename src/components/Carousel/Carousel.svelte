@@ -194,7 +194,7 @@
   }
 
   .slide.is-active {
-    cursor: revert;
+    cursor: grab;
   }
 
   .slide > :global(*):not(:last-child) {
