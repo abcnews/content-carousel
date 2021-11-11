@@ -29,5 +29,10 @@
     width: 100%;
     vertical-align: bottom;
     aspect-ratio: var(--cc-image-aspect-ratio);
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
   }
 </style>
