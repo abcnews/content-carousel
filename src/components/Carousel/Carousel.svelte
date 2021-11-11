@@ -1,10 +1,30 @@
 <script context="module" lang="ts">
+  type Position = {
+    x: number;
+    y: number;
+  };
+
+  type PositionDiff = Position & {
+    dx: number;
+    dy: number;
+  };
+
+  declare namespace svelte.JSX {
+    interface HTMLAttributes<T> {
+      swipestart?: (event: CustomEvent<Position> & { target: EventTarget & T }) => any;
+      swipemove?: (event: CustomEvent<PositionDiff> & { target: EventTarget & T }) => any;
+      swipeend?: (event: CustomEvent<Position> & { target: EventTarget & T }) => any;
+      swipethreshold?: (event: CustomEvent<{ direction: -1 | 1 }> & { target: EventTarget & T }) => any;
+    }
+  }
+
   const MAX_X_BLEED = 64;
   const SLIDE_GAP = 16;
   const TRANSLATION_PIXELS_PER_SECOND = 2500;
 </script>
 
 <script lang="ts">
+  import { swipeable } from '../../actions/swipeable';
   import type { Slide } from './types';
 
   export let slides: Slide[] = [];
@@ -13,8 +33,28 @@
   let baseWidth: number = 0;
   let xPct: number = 0;
   let activeIndex: number = 0;
+  let swipeOffset = 0;
+  let lastSwipeThresholdTime = 0;
 
-  const goToIndex = (index: number) => (activeIndex = index);
+  const goToIndex = (index: number) => {
+    if (index > -1 && index < slides.length) {
+      activeIndex = index;
+    }
+  };
+  const goInDirection = (direction: number) => goToIndex(activeIndex + direction);
+  const handleSlideNav = (index: number) => {
+    if (Date.now() - lastSwipeThresholdTime > 500) {
+      goToIndex(index);
+    }
+  };
+  const handleSwipeMove = (event: CustomEvent) => (swipeOffset = event.detail.dx);
+  const handleSwipeEnd = () => {
+    swipeOffset = 0;
+  };
+  const handleSwipeThreshold = (event: CustomEvent) => {
+    lastSwipeThresholdTime = Date.now();
+    goInDirection(event.detail.direction * -1);
+  };
 
   $: widthDiff = (document.documentElement.clientWidth || window.innerWidth) - baseWidth;
   $: isInMultiColumnLayout = widthDiff > 300; // rough width estimate of PL's sidebar + layout margin
@@ -31,10 +71,11 @@
       hsl(0deg 0% 0% / 1) ${(100 - maskGradientPct).toFixed(2)}%,
       hsl(0deg 0% 0% / 0)
     );
-    --cc-x-offset: ${xPct}%;
+    --cc-swipe-offset: ${swipeOffset}px;
+    --cc-x-offset: calc(${xPct}% + var(--cc-swipe-offset));
     --cc-slide-gap: ${SLIDE_GAP}px;
     --cc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
-    --cc-snap-duration: ${baseWidth / TRANSLATION_PIXELS_PER_SECOND}s;
+    --cc-snap-duration: ${swipeOffset !== 0 ? 0 : baseWidth / TRANSLATION_PIXELS_PER_SECOND}s;
     --cc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
   `;
 </script>
@@ -42,7 +83,18 @@
 <div class="base" bind:clientWidth={baseWidth} style={styleProps}>
   {#if !Number.isNaN(xBleed)}
     <section class="layout" role="region" aria-roledescription="carousel" aria-label="Slides">
-      <div id={`${randomID}_slides`} class="slides" aria-live="polite">
+      <div
+        id={`${randomID}_slides`}
+        class="slides"
+        aria-live="polite"
+        use:swipeable={{
+          minDistancePx: isInMultiColumnLayout ? 2 : undefined,
+          thresholdDistancePx: Math.min(100, baseWidth / 4)
+        }}
+        on:swipemove={handleSwipeMove}
+        on:swipeend={handleSwipeEnd}
+        on:swipethreshold={handleSwipeThreshold}
+      >
         {#each slides as slide, index}
           <div
             class="slide"
@@ -50,7 +102,7 @@
             aria-roledescription="slide"
             aria-label={`${index + 1} of ${slides.length}`}
             class:is-active={activeIndex === index}
-            on:click={() => goToIndex(index)}
+            on:click={() => handleSlideNav(index)}
           >
             {#each slide as { component, props }}
               <svelte:component this={component} {...props} />
@@ -63,7 +115,7 @@
           aria-controls={`${randomID}_slides`}
           aria-label="Previous slide"
           disabled={activeIndex === 0}
-          on:click={() => goToIndex(activeIndex - 1)}
+          on:click={() => goInDirection(-1)}
         >
           <svg role="presentation" viewBox="0 0 40 40">
             <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
@@ -74,7 +126,7 @@
           aria-controls={`${randomID}_slides`}
           aria-label="Next slide"
           disabled={activeIndex === slides.length - 1}
-          on:click={() => goToIndex(activeIndex + 1)}
+          on:click={() => goInDirection(1)}
         >
           <svg role="presentation" viewBox="0 0 40 40">
             <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
