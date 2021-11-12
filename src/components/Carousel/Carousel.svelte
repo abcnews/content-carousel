@@ -59,7 +59,8 @@
   $: widthDiff = (document.documentElement.clientWidth || window.innerWidth) - baseWidth;
   $: isInMultiColumnLayout = widthDiff > 300; // rough width estimate of PL's sidebar + layout margin
   $: xBleed = baseWidth ? Math.floor(Math.max(0, Math.min(MAX_X_BLEED, widthDiff / 2))) : 0;
-  $: maskGradientPct = (xBleed / (baseWidth + xBleed * 2)) * 100;
+  $: maskGradientPx = Math.max(0, xBleed - SLIDE_GAP);
+  $: maskGradientPct = (maskGradientPx / (baseWidth + maskGradientPx * 2)) * 100;
   $: xPct = (activeIndex + (activeIndex * SLIDE_GAP) / baseWidth) * -100;
   $: styleProps = `
     --cc-base-width: ${baseWidth}px;
