@@ -181,7 +181,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: var(--cc-theme-slide-bg, var(--tint-6));
+    background-color: var(--cc-theme-slide-bg, var(--tint-5));
     overflow: hidden;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -201,11 +201,11 @@
   }
 
   .controls {
-    margin-top: 4px;
     display: flex;
     gap: 8px;
     justify-content: var(--cc-controls-justify);
     align-items: center;
+    background-color: var(--cc-theme-controls-bg, var(--tint-6));
     color: var(--cc-theme-controls-fg);
     font-size: 1rem;
     font-weight: bold;
@@ -224,7 +224,6 @@
     padding: 0;
     border: 0;
     outline-offset: -2px;
-    border-radius: 3px;
     background-color: transparent;
     color: inherit;
   }
