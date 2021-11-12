@@ -176,7 +176,6 @@
   .slide {
     flex: 0 0 100%;
     margin: 0;
-    border-radius: 8px;
     padding: var(--cc-slide-padding);
     min-height: 256px;
     display: flex;
