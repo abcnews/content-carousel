@@ -18,9 +18,9 @@
     }
   }
 
-  const MAX_X_BLEED = 64;
-  const SLIDE_GAP = 16;
-  const TRANSLATION_PIXELS_PER_SECOND = 2500;
+  const SLIDES_GAP_PX = 8;
+  const SLIDES_TRANSLATION_PX_S = 2500;
+  const PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX = 300;
 </script>
 
 <script lang="ts">
@@ -29,114 +29,87 @@
 
   export let slides: Slide[] = [];
 
-  let randomID = `content-carousel-${Math.floor(Math.random() * 1e3)}`;
-  let baseWidth: number = 0;
-  let xPct: number = 0;
-  let activeIndex: number = 0;
-  let swipeOffset = 0;
-  let lastSwipeThresholdTime = 0;
+  let id = `content-carousel-${Math.floor(Math.random() * 1e3)}`;
+  let baseWidthPx: number = 0;
+  let slidesActiveIndex: number = 0;
+  let slidesActiveIndexOffsetPct: number = 0;
+  let slidesSwipeOffsetPx = 0;
 
   const goToIndex = (index: number) => {
     if (index > -1 && index < slides.length) {
-      activeIndex = index;
+      slidesActiveIndex = index;
     }
   };
-  const goInDirection = (direction: number) => goToIndex(activeIndex + direction);
-  const handleSlideNav = (index: number) => {
-    if (Date.now() - lastSwipeThresholdTime > 500) {
-      goToIndex(index);
-    }
-  };
-  const handleSwipeMove = (event: CustomEvent) => (swipeOffset = event.detail.dx);
-  const handleSwipeEnd = () => {
-    swipeOffset = 0;
-  };
-  const handleSwipeThreshold = (event: CustomEvent) => {
-    lastSwipeThresholdTime = Date.now();
-    goInDirection(event.detail.direction * -1);
-  };
+  const goInDirection = (direction: number) => goToIndex(slidesActiveIndex + direction);
+  const handleSlidesSwipeMove = (event: CustomEvent) => (slidesSwipeOffsetPx = event.detail.dx);
+  const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1);
+  const handleSlidesSwipeEnd = () => (slidesSwipeOffsetPx = 0);
 
-  $: widthDiff = (document.documentElement.clientWidth || window.innerWidth) - baseWidth;
-  $: isInMultiColumnLayout = widthDiff > 300; // rough width estimate of PL's sidebar + layout margin
-  $: xBleed = baseWidth ? Math.floor(Math.max(0, Math.min(MAX_X_BLEED, widthDiff / 2))) : 0;
-  $: maskGradientPx = Math.max(0, xBleed - SLIDE_GAP);
-  $: maskGradientPct = (maskGradientPx / (baseWidth + maskGradientPx * 2)) * 100;
-  $: xPct = (activeIndex + (activeIndex * SLIDE_GAP) / baseWidth) * -100;
-  $: styleProps = `
-    --cc-base-width: ${baseWidth}px;
-    --cc-x-bleed: ${xBleed}px;
-    --cc-mask-image: linear-gradient(
-      to right,
-      hsl(0deg 0% 0% / 0),
-      hsl(0deg 0% 0% / 1) ${maskGradientPct.toFixed(2)}% ,
-      hsl(0deg 0% 0% / 1) ${(100 - maskGradientPct).toFixed(2)}%,
-      hsl(0deg 0% 0% / 0)
-    );
-    --cc-swipe-offset: ${swipeOffset}px;
-    --cc-x-offset: calc(${xPct}% + var(--cc-swipe-offset));
-    --cc-slide-gap: ${SLIDE_GAP}px;
-    --cc-slide-vertical-padding: ${isInMultiColumnLayout ? 24 : 16}px;
-    --cc-slide-horizontal-padding: ${isInMultiColumnLayout ? 32 : 20}px;
-    --cc-snap-duration: ${swipeOffset !== 0 ? 0 : baseWidth / TRANSLATION_PIXELS_PER_SECOND}s;
-    --cc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
+  $: viewportBaseWidthDiffPx = (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
+  $: isInMultiColumnLayout = viewportBaseWidthDiffPx > PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX;
+  $: slidesActiveIndexOffsetPct = (slidesActiveIndex + (slidesActiveIndex * SLIDES_GAP_PX) / baseWidthPx) * -100;
+  $: baseStyle = `
+    --cc-base-width: ${baseWidthPx}px;
+    --cc-slides-gap: ${SLIDES_GAP_PX}px;
+    --cc-slides-translate-x: calc(${slidesActiveIndexOffsetPct}% + ${slidesSwipeOffsetPx}px);
+    --cc-slides-transition-duration: ${slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S}s;
+    --cc-slide-padding-vertical: ${isInMultiColumnLayout ? 24 : 16}px;
+    --cc-slide-padding-horizontal: ${isInMultiColumnLayout ? 32 : 20}px;
   `;
 </script>
 
-<div class="base" bind:clientWidth={baseWidth} style={styleProps}>
-  {#if !Number.isNaN(xBleed)}
-    <section class="layout" role="region" aria-roledescription="carousel" aria-label="Slides">
-      <div
-        id={`${randomID}_slides`}
-        class="slides"
-        aria-live="polite"
-        use:swipeable={{
-          minDistancePx: isInMultiColumnLayout ? 2 : undefined,
-          thresholdDistancePx: Math.min(100, baseWidth / 4)
-        }}
-        on:swipemove={handleSwipeMove}
-        on:swipeend={handleSwipeEnd}
-        on:swipethreshold={handleSwipeThreshold}
+<div class="base" bind:clientWidth={baseWidthPx} style={baseStyle}>
+  <section class="layout" role="region" aria-roledescription="carousel" aria-label="Slides">
+    <div
+      id={`${id}_slides`}
+      class="slides"
+      aria-live="polite"
+      use:swipeable={{
+        minDistancePx: isInMultiColumnLayout ? 2 : undefined,
+        thresholdDistancePx: Math.min(100, baseWidthPx / 4)
+      }}
+      on:swipemove={handleSlidesSwipeMove}
+      on:swipeend={handleSlidesSwipeEnd}
+      on:swipethreshold={handleSlidesSwipeThreshold}
+    >
+      {#each slides as slide, index}
+        <div
+          class="slide"
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${index + 1} of ${slides.length}`}
+          class:is-active={slidesActiveIndex === index}
+        >
+          {#each slide as { component, props }}
+            <svelte:component this={component} {...props} />
+          {/each}
+        </div>
+      {/each}
+    </div>
+    <div class="controls">
+      <button
+        aria-controls={`${id}_slides`}
+        aria-label="Previous slide"
+        disabled={slidesActiveIndex === 0}
+        on:click={() => goInDirection(-1)}
       >
-        {#each slides as slide, index}
-          <div
-            class="slide"
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${index + 1} of ${slides.length}`}
-            class:is-active={activeIndex === index}
-            on:click={() => handleSlideNav(index)}
-          >
-            {#each slide as { component, props }}
-              <svelte:component this={component} {...props} />
-            {/each}
-          </div>
-        {/each}
-      </div>
-      <div class="controls">
-        <button
-          aria-controls={`${randomID}_slides`}
-          aria-label="Previous slide"
-          disabled={activeIndex === 0}
-          on:click={() => goInDirection(-1)}
-        >
-          <svg role="presentation" viewBox="0 0 40 40">
-            <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
-          </svg>
-        </button>
-        <div aria-hidden="true">{`${activeIndex + 1} / ${slides.length}`}</div>
-        <button
-          aria-controls={`${randomID}_slides`}
-          aria-label="Next slide"
-          disabled={activeIndex === slides.length - 1}
-          on:click={() => goInDirection(1)}
-        >
-          <svg role="presentation" viewBox="0 0 40 40">
-            <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
-          </svg>
-        </button>
-      </div>
-    </section>
-  {/if}
+        <svg role="presentation" viewBox="0 0 40 40">
+          <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
+        </svg>
+      </button>
+      <div aria-hidden="true">{`${slidesActiveIndex + 1} / ${slides.length}`}</div>
+      <button
+        aria-controls={`${id}_slides`}
+        aria-label="Next slide"
+        disabled={slidesActiveIndex === slides.length - 1}
+        on:click={() => goInDirection(1)}
+      >
+        <svg role="presentation" viewBox="0 0 40 40">
+          <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
+        </svg>
+      </button>
+    </div>
+  </section>
 </div>
 
 <style>
@@ -145,6 +118,7 @@
     position: relative;
     box-sizing: border-box;
     margin-bottom: 1.5rem;
+    background-color: var(--cc-theme-base-background-color, var(--tint-5));
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -154,19 +128,14 @@
   }
 
   .layout {
-    width: calc(100% + var(--cc-x-bleed) * 2);
-    padding: 0 var(--cc-x-bleed);
-    margin: 0 calc(var(--cc-x-bleed) * -1);
     overflow: hidden;
-    -webkit-mask-image: var(--cc-mask-image);
-    mask-image: var(--cc-mask-image);
   }
 
   .slides {
-    transform: translate3d(var(--cc-x-offset), 0, 0);
+    transform: translate3d(var(--cc-slides-translate-x), 0, 0);
     display: flex;
-    gap: var(--cc-slide-gap);
-    transition: transform var(--cc-snap-duration) ease-out;
+    gap: var(--cc-slides-gap);
+    transition: transform var(--cc-slides-transition-duration) ease-out;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -178,13 +147,12 @@
   .slide {
     flex: 0 0 100%;
     margin: 0;
-    padding: var(--cc-slide-vertical-padding) var(--cc-slide-horizontal-padding);
+    padding: var(--cc-slide-padding-vertical) var(--cc-slide-padding-horizontal);
     min-height: 256px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 1.25rem;
-    background-color: var(--cc-theme-slide-bg, var(--tint-5));
     overflow: hidden;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -202,9 +170,8 @@
   .controls {
     display: flex;
     gap: 8px;
-    justify-content: var(--cc-controls-justify);
+    justify-content: center;
     align-items: center;
-    background-color: var(--cc-theme-controls-bg, var(--tint-6));
     color: var(--cc-theme-controls-fg);
     font-size: 1rem;
     font-weight: bold;
