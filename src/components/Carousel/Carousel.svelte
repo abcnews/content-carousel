@@ -75,7 +75,8 @@
     --cc-swipe-offset: ${swipeOffset}px;
     --cc-x-offset: calc(${xPct}% + var(--cc-swipe-offset));
     --cc-slide-gap: ${SLIDE_GAP}px;
-    --cc-slide-padding: ${isInMultiColumnLayout ? 32 : 20}px;
+    --cc-slide-vertical-padding: ${isInMultiColumnLayout ? 24 : 16}px;
+    --cc-slide-horizontal-padding: ${isInMultiColumnLayout ? 32 : 20}px;
     --cc-snap-duration: ${swipeOffset !== 0 ? 0 : baseWidth / TRANSLATION_PIXELS_PER_SECOND}s;
     --cc-controls-justify: ${isInMultiColumnLayout ? 'flex-end' : 'center'}; 
   `;
@@ -177,11 +178,12 @@
   .slide {
     flex: 0 0 100%;
     margin: 0;
-    padding: var(--cc-slide-padding);
+    padding: var(--cc-slide-vertical-padding) var(--cc-slide-horizontal-padding);
     min-height: 256px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 1.25rem;
     background-color: var(--cc-theme-slide-bg, var(--tint-5));
     overflow: hidden;
     -webkit-touch-callout: none;
@@ -195,10 +197,6 @@
 
   .slide.is-active {
     cursor: grab;
-  }
-
-  .slide > :global(*):not(:last-child) {
-    margin-bottom: 1.5rem;
   }
 
   .controls {

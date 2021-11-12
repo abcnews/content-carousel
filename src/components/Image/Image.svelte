@@ -20,14 +20,7 @@
 <style>
   figure {
     position: relative;
-    margin-left: calc(var(--cc-slide-padding) * -1);
-    margin-left: calc(var(--cc-slide-padding) * -1);
-    width: calc(100% + var(--cc-slide-padding) * 2);
-  }
-
-  figure:first-child {
-    margin-top: calc(var(--cc-slide-padding) * -1);
-    margin-bottom: auto;
+    margin: calc(var(--cc-slide-vertical-padding) * -1) calc(var(--cc-slide-horizontal-padding) * -1) auto;
   }
 
   img {
