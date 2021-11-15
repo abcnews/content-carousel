@@ -19,4 +19,12 @@
   div > :global(*) {
     margin: 0;
   }
+
+  div:first-child {
+    margin-top: auto;
+  }
+
+  div:last-child {
+    margin-bottom: auto;
+  }
 </style>

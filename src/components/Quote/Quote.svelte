@@ -37,6 +37,14 @@
     margin: 0;
   }
 
+  figure:first-child {
+    margin-top: auto;
+  }
+
+  figure:last-child {
+    margin-bottom: auto;
+  }
+
   blockquote {
     margin: 0;
   }

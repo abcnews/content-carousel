@@ -151,7 +151,6 @@
     min-height: 256px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 1.25rem;
     overflow: hidden;
     -webkit-touch-callout: none;
