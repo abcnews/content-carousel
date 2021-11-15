@@ -55,6 +55,8 @@
     --cc-slides-transition-duration: ${slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S}s;
     --cc-slide-padding-vertical: ${isInMultiColumnLayout ? 24 : 16}px;
     --cc-slide-padding-horizontal: ${isInMultiColumnLayout ? 32 : 20}px;
+    --cc-hint-opacity: ${slidesActiveIndex === 0 ? 1 : 0};
+    --cc-hint-color: ${'var(--tint-4)'};
   `;
 </script>
 
@@ -110,6 +112,15 @@
       </button>
     </div>
   </section>
+  <div class="hint" role="none" title={`This is a group of ${slides.length} slides`}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.22 180.12">
+      <rect fill="currentColor" x="53.14" y="32.76" width="96.09" height="96.09" />
+      <polygon
+        fill="currentColor"
+        points="169.43 50.51 158.37 50.51 158.37 137.09 71.79 137.09 71.79 148.63 168.95 148.63 168.95 148.15 169.43 148.15 169.43 50.51"
+      />
+    </svg>
+  </div>
 </div>
 
 <style>
@@ -118,7 +129,7 @@
     position: relative;
     box-sizing: border-box;
     margin-bottom: 1.5rem;
-    background-color: var(--cc-theme-base-background-color, var(--tint-5));
+    background-color: var(--cc-theme-base-background-color, var(--tint-6));
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -212,5 +223,19 @@
 
   .controls :last-child > svg {
     transform: scaleX(-1);
+  }
+
+  .hint {
+    opacity: var(--cc-hint-opacity);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    color: var(--cc-hint-color);
+    transition: opacity 0.25s;
+  }
+
+  .hint svg {
+    width: 40px;
+    height: 40px;
   }
 </style>
