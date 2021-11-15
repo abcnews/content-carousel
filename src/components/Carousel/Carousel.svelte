@@ -24,7 +24,9 @@
 </script>
 
 <script lang="ts">
+  import type { SvelteComponentTyped } from 'svelte';
   import { swipeable } from '../../actions/swipeable';
+  import Image from '../Image/Image.svelte';
   import type { Slide } from './types';
 
   export let slides: Slide[] = [];
@@ -48,6 +50,8 @@
   $: viewportBaseWidthDiffPx = (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
   $: isInMultiColumnLayout = viewportBaseWidthDiffPx > PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX;
   $: slidesActiveIndexOffsetPct = (slidesActiveIndex + (slidesActiveIndex * SLIDES_GAP_PX) / baseWidthPx) * -100;
+  $: doesActiveSlideStartWithImage =
+    slides[slidesActiveIndex][0].component === (Image as unknown as SvelteComponentTyped);
   $: baseStyle = `
     --cc-base-width: ${baseWidthPx}px;
     --cc-slides-gap: ${SLIDES_GAP_PX}px;
@@ -55,8 +59,8 @@
     --cc-slides-transition-duration: ${slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S}s;
     --cc-slide-padding-vertical: ${isInMultiColumnLayout ? 24 : 16}px;
     --cc-slide-padding-horizontal: ${isInMultiColumnLayout ? 32 : 20}px;
-    --cc-hint-opacity: ${slidesActiveIndex === 0 ? 1 : 0};
-    --cc-hint-color: ${'var(--tint-4)'};
+    --cc-hint-mix-blend-mode: ${doesActiveSlideStartWithImage ? 'luminocity' : 'initial'};
+    --cc-hint-color: hsl(0deg 0% ${doesActiveSlideStartWithImage ? 90 : 75}%);
   `;
 </script>
 
@@ -226,12 +230,12 @@
   }
 
   .hint {
-    opacity: var(--cc-hint-opacity);
     position: absolute;
     top: 2px;
-    right: 2px;
+    right: 0;
     color: var(--cc-hint-color);
-    transition: opacity 0.25s;
+    mix-blend-mode: var(--cc-hint-mix-blend-mode);
+    transition: color var(--cc-slides-transition-duration) ease-out;
   }
 
   .hint svg {
