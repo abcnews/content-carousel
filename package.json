@@ -1,6 +1,6 @@
 {
 	"name": "content-carousel",
-	"version": "1.6.3",
+	"version": "1.6.4",
 	"description": "A project generated from aunty's svelte project template.",
 	"license": "MIT",
 	"private": true,
