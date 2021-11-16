@@ -275,17 +275,15 @@
   .pip {
     color: inherit;
     border-radius: 50%;
-    border: 2px solid currentColor;
+    border: 1.5px solid currentColor;
     width: 8px;
     height: 8px;
-    background-color: currentColor;
-    transition: transform var(--cc-slides-transition-duration) ease-out,
-      background-color var(--cc-slides-transition-duration) ease-out;
+    background-color: transparent;
+    transition: background-color var(--cc-slides-transition-duration) ease-out;
   }
 
   .pip.current {
-    background-color: transparent;
-    transform: scale(1.25);
+    background-color: currentColor;
   }
 
   .hint {
