@@ -101,8 +101,8 @@
         aria-disabled={slidesActiveIndex === 0}
         on:click={() => goInDirection(-1)}
       >
-        <svg role="presentation" viewBox="0 0 40 40">
-          <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
+        <svg role="presentation" viewBox="0 0 12 20">
+          <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width={slidesActiveIndex === 0 ? 2 : 3} />
         </svg>
       </button>
       <div
@@ -120,8 +120,13 @@
         aria-disabled={slidesActiveIndex === slides.length - 1}
         on:click={() => goInDirection(1)}
       >
-        <svg role="presentation" viewBox="0 0 40 40">
-          <polyline stroke="currentColor" stroke-width="2" fill="none" points="22.25 12.938 16 19.969 22.25 27" />
+        <svg role="presentation" viewBox="0 0 12 20">
+          <path
+            d="M2 1L10 10L2 19"
+            fill="none"
+            stroke="currentColor"
+            stroke-width={slidesActiveIndex === slides.length - 1 ? 2 : 3}
+          />
         </svg>
       </button>
     </div>
@@ -193,11 +198,12 @@
 
   .controls {
     position: relative;
-    margin-top: calc(var(--cc-slide-padding-vertical) / 3 * -2);
+    margin-top: calc(var(--cc-slide-padding-vertical) / -2);
+    padding: 0 calc(var(--cc-slide-padding-horizontal) / 3 * 2) calc(var(--cc-slide-padding-vertical) / 2);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--cc-theme-controls-fg);
+    color: var(--cc-theme-controls-color, var(--tint-1));
     font-size: 1rem;
     font-weight: bold;
   }
@@ -207,34 +213,50 @@
     display: block;
     padding: 0;
     border: 0;
+    width: var(--cc-controls-height);
+    height: var(--cc-controls-height);
     outline-offset: -2px;
     background-color: transparent;
     color: inherit;
     pointer-events: none;
   }
 
+  @media (pointer: fine) {
+    .controls button {
+      pointer-events: revert;
+      cursor: pointer;
+    }
+  }
+
   .controls button[aria-disabled='false']:focus {
-    color: var(--cc-theme-controls-fg-focus);
-    background-color: var(--cc-theme-controls-bg-focus, var(--tint-5));
+    background-color: var(--cc-theme-control-focus-background-color, var(--tint-5));
   }
 
   .controls svg {
     opacity: 0;
-    width: var(--cc-controls-height);
-    height: var(--cc-controls-height);
+    width: 12px;
+    height: 20px;
     vertical-align: bottom;
   }
 
-  .controls :last-child > svg {
-    transform: scaleX(-1);
+  .controls button[aria-disabled='true']:focus svg {
+    opacity: 0.25;
   }
 
-  .controls button[aria-disabled='true']:focus svg {
-    opacity: 0.2;
+  @media (pointer: fine) {
+    .controls button[aria-disabled='true'] svg {
+      opacity: 0.25;
+    }
   }
 
   .controls button[aria-disabled='false']:focus svg {
     opacity: 1;
+  }
+
+  @media (pointer: fine) {
+    .controls button[aria-disabled='false'] svg {
+      opacity: 1;
+    }
   }
 
   .pips {
@@ -251,15 +273,19 @@
   }
 
   .pip {
+    color: inherit;
     border-radius: 50%;
+    border: 2px solid currentColor;
     width: 8px;
     height: 8px;
-    background-color: var(--cc-theme-pip-background-color, var(--tint-1));
-    transition: background-color var(--cc-slides-transition-duration) ease-out;
+    background-color: currentColor;
+    transition: transform var(--cc-slides-transition-duration) ease-out,
+      background-color var(--cc-slides-transition-duration) ease-out;
   }
 
   .pip.current {
-    background-color: var(--cc-theme-pip-current-background-color, var(--tint-3));
+    background-color: transparent;
+    transform: scale(1.25);
   }
 
   .hint {
