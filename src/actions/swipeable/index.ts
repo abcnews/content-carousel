@@ -17,7 +17,7 @@ type SwipeableActionProps = {
 
 const DEFAULT_MIN_DISTANCE_PX = 5;
 const DEFAULT_THRESHOLD_DISTANCE_PX = 100;
-const SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE = false;
+const SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 export function swipeable(
   node: Element,
@@ -43,7 +43,7 @@ export function swipeable(
 
     dispatch('swipestart', { x, y });
 
-    if (SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+    if (!SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS) {
       addMoveEventListener(window, handleMove);
       addEndEventListener(window, handleEnd);
     }
@@ -84,7 +84,7 @@ export function swipeable(
   };
 
   const handleEnd = (event: Event) => {
-    if (SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+    if (!SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS) {
       removeMoveEventListener(window, handleMove);
       removeEndEventListener(window, handleEnd);
     } else if (!isDuring) {
@@ -98,7 +98,7 @@ export function swipeable(
 
   addStartEventListener(node, handleStart);
 
-  if (!SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+  if (SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS) {
     addMoveEventListener(window, handleMove);
     addEndEventListener(window, handleEnd);
   }
@@ -111,7 +111,7 @@ export function swipeable(
     destroy() {
       removeStartEventListener(node, handleStart);
 
-      if (!SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+      if (SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS) {
         removeMoveEventListener(window, handleMove);
         removeEndEventListener(window, handleEnd);
       }
