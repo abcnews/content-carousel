@@ -61,7 +61,7 @@
     --cc-slides-transition-duration: ${slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S}s;
     --cc-slide-padding-vertical: ${isInMultiColumnLayout ? 24 : 16}px;
     --cc-slide-padding-horizontal: ${isInMultiColumnLayout ? 32 : 20}px;
-    --cc-hint-color: hsl(0deg 0% ${doesActiveSlideStartWithImage ? 90 : 75}%);
+    --cc-hint-color: hsl(0deg 0% ${doesActiveSlideStartWithImage ? 90 : 80}%);
     --cc-hint-mix-blend-mode: ${doesActiveSlideStartWithImage ? 'luminocity' : 'initial'};
   `;
 </script>
@@ -102,7 +102,7 @@
         on:click={() => goInDirection(-1)}
       >
         <svg role="presentation" viewBox="0 0 12 20">
-          <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width={slidesActiveIndex === 0 ? 2 : 3} />
+          <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
       </button>
       <div
@@ -121,12 +121,7 @@
         on:click={() => goInDirection(1)}
       >
         <svg role="presentation" viewBox="0 0 12 20">
-          <path
-            d="M2 1L10 10L2 19"
-            fill="none"
-            stroke="currentColor"
-            stroke-width={slidesActiveIndex === slides.length - 1 ? 2 : 3}
-          />
+          <path d="M2 1L10 10L2 19" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
       </button>
     </div>
@@ -240,12 +235,12 @@
   }
 
   .controls button[aria-disabled='true']:focus svg {
-    opacity: 0.25;
+    opacity: 0.2;
   }
 
   @media (pointer: fine) {
     .controls button[aria-disabled='true'] svg {
-      opacity: 0.25;
+      opacity: 0.2;
     }
   }
 
@@ -275,10 +270,10 @@
   .pip {
     color: inherit;
     border-radius: 50%;
-    border: 1.5px solid currentColor;
+    border: 1px solid currentColor;
     width: 8px;
     height: 8px;
-    background-color: transparent;
+    background-color: var(--cc-theme-base-background-color, var(--tint-6));
     transition: background-color var(--cc-slides-transition-duration) ease-out;
   }
 
