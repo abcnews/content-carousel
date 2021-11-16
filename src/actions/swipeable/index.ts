@@ -17,6 +17,7 @@ type SwipeableActionProps = {
 
 const DEFAULT_MIN_DISTANCE_PX = 5;
 const DEFAULT_THRESHOLD_DISTANCE_PX = 100;
+const SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE = false;
 
 export function swipeable(
   node: Element,
@@ -42,8 +43,10 @@ export function swipeable(
 
     dispatch('swipestart', { x, y });
 
-    addMoveEventListener(window, handleMove);
-    addEndEventListener(window, handleEnd);
+    if (SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+      addMoveEventListener(window, handleMove);
+      addEndEventListener(window, handleEnd);
+    }
   };
 
   const handleMove = (event: Event) => {
@@ -66,6 +69,10 @@ export function swipeable(
     }
 
     if (axis === 'x') {
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+
       dispatch('swipemove', { x, y, dx, dy });
 
       if (Math.abs(dx) > thresholdDistancePx) {
@@ -77,9 +84,12 @@ export function swipeable(
   };
 
   const handleEnd = (event: Event) => {
-    event.preventDefault();
-    removeEndEventListener(window, handleEnd);
-    removeMoveEventListener(window, handleMove);
+    if (SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+      removeMoveEventListener(window, handleMove);
+      removeEndEventListener(window, handleEnd);
+    } else if (!isDuring) {
+      return;
+    }
 
     isDuring = false;
 
@@ -88,6 +98,11 @@ export function swipeable(
 
   addStartEventListener(node, handleStart);
 
+  if (!SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+    addMoveEventListener(window, handleMove);
+    addEndEventListener(window, handleEnd);
+  }
+
   return {
     update(props: SwipeableActionProps) {
       minDistancePx = props.minDistancePx || DEFAULT_MIN_DISTANCE_PX;
@@ -95,6 +110,11 @@ export function swipeable(
     },
     destroy() {
       removeStartEventListener(node, handleStart);
+
+      if (!SHOULD_ONLY_LISTEN_FOR_MOVE_AND_END_EVENTS_DURING_GESTURE) {
+        removeMoveEventListener(window, handleMove);
+        removeEndEventListener(window, handleEnd);
+      }
     }
   };
 }

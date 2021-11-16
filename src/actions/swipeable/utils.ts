@@ -19,13 +19,13 @@ export const removeStartEventListener = (target: EventTarget, listener: EventLis
 };
 
 export const addMoveEventListener = (target: EventTarget, listener: EventListener) => {
-  target.addEventListener('touchmove', listener);
   target.addEventListener('mousemove', listener);
+  target.addEventListener('touchmove', listener, { passive: false });
 };
 
 export const removeMoveEventListener = (target: EventTarget, listener: EventListener) => {
-  target.removeEventListener('touchmove', listener);
   target.removeEventListener('mousemove', listener);
+  target.removeEventListener('touchmove', listener);
 };
 
 export const addEndEventListener = (target: EventTarget, listener: EventListener) => {
