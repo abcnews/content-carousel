@@ -21,8 +21,6 @@
   const SLIDES_GAP_PX = 8;
   const SLIDES_TRANSLATION_PX_S = 2500;
   const PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX = 300;
-  const PIPS_GAP_PX = 9;
-  const PIP_SIZE_PX = 8;
 </script>
 
 <script lang="ts">
