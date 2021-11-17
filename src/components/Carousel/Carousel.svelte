@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+  import type { TrackFn } from '../../behaviour';
+
   type Position = {
     x: number;
     y: number;
@@ -21,32 +23,46 @@
   const SLIDES_GAP_PX = 8;
   const SLIDES_TRANSLATION_PX_S = 2500;
   const PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX = 300;
+  const NOOP_TRACK_FN: TrackFn = (name: string, value: string) => {};
 </script>
 
 <script lang="ts">
-  import type { SvelteComponentTyped } from 'svelte';
+  import { onMount, SvelteComponentTyped } from 'svelte';
   import { swipeable } from '../../actions/swipeable';
   import Image from '../Image/Image.svelte';
   import type { Slide } from './types';
 
   export let slides: Slide[] = [];
+  export let track: TrackFn = NOOP_TRACK_FN;
 
   let id = `content-carousel-${Math.floor(Math.random() * 1e3)}`;
   let baseWidthPx: number = 0;
   let slidesActiveIndex: number = 0;
   let slidesActiveIndexOffsetPct: number = 0;
   let slidesSwipeOffsetPx = 0;
+  let farthestIndexReached = 0;
 
   const goToIndex = (index: number) => {
     if (index > -1 && index < slides.length) {
       slidesActiveIndex = index;
+
+      return true;
+    }
+
+    return false;
+  };
+  const goInDirection = (direction: number, interactionMethod: string) => {
+    if (goToIndex(slidesActiveIndex + direction)) {
+      track('directional-navigation', `${interactionMethod}-${direction === -1 ? 'prev' : 'next'}`);
     }
   };
-  const goInDirection = (direction: number) => goToIndex(slidesActiveIndex + direction);
+  const handleButtonPrev = (event: CustomEvent) => goInDirection(-1, event.detail === 1 ? 'mouse' : 'keyboard');
+  const handleButtonNext = (event: CustomEvent) => goInDirection(1, event.detail === 1 ? 'mouse' : 'keyboard');
   const handleSlidesSwipeMove = (event: CustomEvent) => (slidesSwipeOffsetPx = event.detail.dx);
-  const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1);
+  const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1, 'swipe');
   const handleSlidesSwipeEnd = () => (slidesSwipeOffsetPx = 0);
 
+  $: farthestIndexReached = Math.max(slidesActiveIndex, farthestIndexReached);
   $: viewportBaseWidthDiffPx = (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
   $: isInMultiColumnLayout = viewportBaseWidthDiffPx > PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX;
   $: slidesActiveIndexOffsetPct = (slidesActiveIndex + (slidesActiveIndex * SLIDES_GAP_PX) / baseWidthPx) * -100;
@@ -62,6 +78,28 @@
     --cc-hint-color: hsl(0deg 0% ${doesActiveSlideStartWithImage ? 90 : 80}%);
     --cc-hint-mix-blend-mode: ${doesActiveSlideStartWithImage ? 'luminocity' : 'initial'};
   `;
+
+  onMount(() => {
+    const listener = (event: Event) => {
+      if (event.type === 'pagehide' || document.visibilityState === 'hidden') {
+        stopListening();
+        track('number-slides-seen', String(farthestIndexReached + 1));
+        track('percentage-slides-seen', String(Math.round(((farthestIndexReached + 1) / slides.length) * 100)));
+      }
+    };
+
+    const stopListening = () => {
+      document.removeEventListener('visibilitychange', listener);
+      document.removeEventListener('pagehide', listener);
+    };
+
+    document.addEventListener('visibilitychange', listener);
+    document.addEventListener('pagehide', listener);
+
+    return () => {
+      stopListening();
+    };
+  });
 </script>
 
 <div class="base" bind:clientWidth={baseWidthPx} style={baseStyle}>
@@ -97,7 +135,7 @@
         aria-controls={`${id}_slides`}
         aria-label="Previous slide"
         aria-disabled={slidesActiveIndex === 0}
-        on:click={() => goInDirection(-1)}
+        on:click={handleButtonPrev}
       >
         <svg role="presentation" viewBox="0 0 12 20">
           <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width="2" />
@@ -116,7 +154,7 @@
         aria-controls={`${id}_slides`}
         aria-label="Next slide"
         aria-disabled={slidesActiveIndex === slides.length - 1}
-        on:click={() => goInDirection(1)}
+        on:click={handleButtonNext}
       >
         <svg role="presentation" viewBox="0 0 12 20">
           <path d="M2 1L10 10L2 19" fill="none" stroke="currentColor" stroke-width="2" />
