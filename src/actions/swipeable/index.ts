@@ -16,7 +16,7 @@ type SwipeableActionProps = {
 };
 
 const DEFAULT_MIN_DISTANCE_PX = 5;
-const DEFAULT_THRESHOLD_DISTANCE_PX = 100;
+const DEFAULT_THRESHOLD_DISTANCE_PX = 75;
 const SHOULD_ALWAYS_LISTEN_FOR_MOVE_AND_END_EVENTS = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 export function swipeable(

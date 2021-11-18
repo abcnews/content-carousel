@@ -127,8 +127,7 @@
       class="slides"
       aria-live="polite"
       use:swipeable={{
-        minDistancePx: isInMultiColumnLayout ? 2 : undefined,
-        thresholdDistancePx: Math.min(150, baseWidthPx / 2)
+        minDistancePx: isInMultiColumnLayout ? 2 : undefined
       }}
       on:swipemove={handleSlidesSwipeMove}
       on:swipeend={handleSlidesSwipeEnd}
