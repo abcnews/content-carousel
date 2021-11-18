@@ -41,6 +41,8 @@
   let slidesActiveIndexOffsetPct: number = 0;
   let slidesSwipeOffsetPx = 0;
   let farthestIndexReached = 0;
+  let buttonPrevEl: HTMLButtonElement;
+  let buttonNextEl: HTMLButtonElement;
 
   const goToIndex = (index: number) => {
     if (index > -1 && index < slides.length) {
@@ -56,8 +58,24 @@
       track('directional-navigation', `${interactionMethod}-${direction === -1 ? 'prev' : 'next'}`);
     }
   };
-  const handleButtonPrev = (event: CustomEvent) => goInDirection(-1, event.detail === 1 ? 'mouse' : 'keyboard');
-  const handleButtonNext = (event: CustomEvent) => goInDirection(1, event.detail === 1 ? 'mouse' : 'keyboard');
+  const handleButtonPrev = (event: KeyboardEvent | CustomEvent) =>
+    goInDirection(-1, event.detail === 1 ? 'mouse' : 'keyboard');
+  const handleButtonNext = (event: KeyboardEvent | CustomEvent) =>
+    goInDirection(1, event.detail === 1 ? 'mouse' : 'keyboard');
+  const handleButtonKeydown = (event: KeyboardEvent) => {
+    switch (event.key) {
+      case 'ArrowLeft':
+        handleButtonPrev(event);
+        buttonPrevEl.focus();
+        break;
+      case 'ArrowRight':
+        handleButtonNext(event);
+        buttonNextEl.focus();
+        break;
+      default:
+        break;
+    }
+  };
   const handleSlidesSwipeMove = (event: CustomEvent) => (slidesSwipeOffsetPx = event.detail.dx);
   const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1, 'swipe');
   const handleSlidesSwipeEnd = () => (slidesSwipeOffsetPx = 0);
@@ -132,10 +150,12 @@
     </div>
     <div class="controls">
       <button
+        bind:this={buttonPrevEl}
         aria-controls={`${id}_slides`}
         aria-label="Previous slide"
         aria-disabled={slidesActiveIndex === 0}
         on:click={handleButtonPrev}
+        on:keydown={handleButtonKeydown}
       >
         <svg role="presentation" viewBox="0 0 12 20">
           <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width="2" />
@@ -151,10 +171,12 @@
         {/each}
       </div>
       <button
+        bind:this={buttonNextEl}
         aria-controls={`${id}_slides`}
         aria-label="Next slide"
         aria-disabled={slidesActiveIndex === slides.length - 1}
         on:click={handleButtonNext}
+        on:keydown={handleButtonKeydown}
       >
         <svg role="presentation" viewBox="0 0 12 20">
           <path d="M2 1L10 10L2 19" fill="none" stroke="currentColor" stroke-width="2" />
