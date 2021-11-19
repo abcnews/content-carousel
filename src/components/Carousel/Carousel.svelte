@@ -270,14 +270,10 @@
     outline-offset: -2px;
     background-color: transparent;
     color: inherit;
-    pointer-events: none;
   }
 
-  @media (pointer: fine) {
-    .controls button {
-      pointer-events: revert;
-      cursor: pointer;
-    }
+  .controls button[aria-disabled='false'] {
+    cursor: pointer;
   }
 
   .controls button[aria-disabled='false']:focus {
@@ -285,30 +281,14 @@
   }
 
   .controls svg {
-    opacity: 0;
     width: 12px;
     height: 20px;
     vertical-align: bottom;
+    transition: opacity var(--cc-slides-transition-duration) ease-out;
   }
 
-  .controls button[aria-disabled='true']:focus svg {
+  .controls button[aria-disabled='true'] svg {
     opacity: 0.2;
-  }
-
-  @media (pointer: fine) {
-    .controls button[aria-disabled='true'] svg {
-      opacity: 0.2;
-    }
-  }
-
-  .controls button[aria-disabled='false']:focus svg {
-    opacity: 1;
-  }
-
-  @media (pointer: fine) {
-    .controls button[aria-disabled='false'] svg {
-      opacity: 1;
-    }
   }
 
   .pips {

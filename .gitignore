@@ -4,6 +4,7 @@
 # output
 /.build
 /.deploy
+/.stats
 
 # misc
 .DS_Store
