@@ -43,6 +43,7 @@
   let farthestIndexReached = 0;
   let buttonPrevEl: HTMLButtonElement;
   let buttonNextEl: HTMLButtonElement;
+  let triedToClickHint = false;
 
   const goToIndex = (index: number) => {
     if (index > -1 && index < slides.length) {
@@ -79,6 +80,7 @@
   const handleSlidesSwipeMove = (event: CustomEvent) => (slidesSwipeOffsetPx = event.detail.dx);
   const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1, 'swipe');
   const handleSlidesSwipeEnd = () => (slidesSwipeOffsetPx = 0);
+  const handleHintClick = () => (triedToClickHint = true);
 
   $: farthestIndexReached = Math.max(slidesActiveIndex, farthestIndexReached);
   $: viewportBaseWidthDiffPx = (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
@@ -103,6 +105,7 @@
         stopListening();
         track('number-slides-seen', String(farthestIndexReached + 1));
         track('percentage-slides-seen', String(Math.round(((farthestIndexReached + 1) / slides.length) * 100)));
+        track('tried-to-click-hint', triedToClickHint ? 'yes' : 'no');
       }
     };
 
@@ -183,7 +186,7 @@
       </button>
     </div>
   </section>
-  <div class="hint" role="none" title={`This is a group of ${slides.length} slides`}>
+  <div class="hint" role="none" title={`This is a group of ${slides.length} slides`} on:click={handleHintClick}>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.22 180.12">
       <rect fill="currentColor" x="53.14" y="32.76" width="96.09" height="96.09" />
       <polygon
