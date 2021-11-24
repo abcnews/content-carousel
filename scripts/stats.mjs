@@ -109,10 +109,11 @@ const getChartciiChart = (dict, label, formatKey) =>
   });
 
 try {
-  const [numberSlidesSeen, percentageSlidesSeen, directionalNavivgation] = await Promise.all([
+  const [numberSlidesSeen, percentageSlidesSeen, directionalNavivgation, triedToClickHint] = await Promise.all([
     getData('number-slides-seen'),
     getData('percentage-slides-seen'),
-    getData('directional-navigation')
+    getData('directional-navigation'),
+    getData('tried-to-click-hint')
   ]);
 
   console.log({
@@ -121,7 +122,8 @@ try {
     preview,
     numberSlidesSeen,
     percentageSlidesSeen,
-    directionalNavivgation
+    directionalNavivgation,
+    triedToClickHint
   });
 
   if (numberSlidesSeen) {
@@ -148,6 +150,15 @@ try {
       getChartciiChart(
         directionalNavivgation,
         `Directional navigation used on carousel ${carousel} in article ${article}${preview ? ' (preview)' : ''}`
+      ).create()
+    );
+  }
+
+  if (triedToClickHint) {
+    console.log(
+      getChartciiChart(
+        triedToClickHint,
+        `Was slide deck icon hint clicked on carousel ${carousel} in article ${article}${preview ? ' (preview)' : ''}?`
       ).create()
     );
   }
