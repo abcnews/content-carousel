@@ -23,6 +23,7 @@
   const SLIDES_GAP_PX = 8;
   const SLIDES_TRANSLATION_PX_S = 2500;
   const PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX = 300;
+  const MAX_PIPS_BEFORE_PROGRESS = 20;
   const NOOP_TRACK_FN: TrackFn = (name: string, value: string) => {};
 </script>
 
@@ -163,15 +164,19 @@
           <path d="M10 1L2 10L10 19" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
       </button>
-      <div
-        class="pips"
-        class:crowded={slides.length > 10 && !isInMultiColumnLayout}
-        class:chockers={slides.length > 15 && !isInMultiColumnLayout}
-      >
-        {#each slides as _, index}
-          <div class="pip" class:current={slidesActiveIndex === index} />
-        {/each}
-      </div>
+      {#if slides.length <= MAX_PIPS_BEFORE_PROGRESS}
+        <div
+          class="pips"
+          class:crowded={slides.length > 10 && !isInMultiColumnLayout}
+          class:chockers={slides.length > 15 && !isInMultiColumnLayout}
+        >
+          {#each slides as _, index}
+            <div class="pip" class:current={slidesActiveIndex === index} />
+          {/each}
+        </div>
+      {:else}
+        <div class="progress">{`${slidesActiveIndex + 1} / ${slides.length}`}</div>
+      {/if}
       <button
         bind:this={buttonNextEl}
         aria-controls={`${id}_slides`}
@@ -319,6 +324,10 @@
 
   .pip.current {
     background-color: currentColor;
+  }
+
+  .progress {
+    font-size: 1rem;
   }
 
   .hint {
