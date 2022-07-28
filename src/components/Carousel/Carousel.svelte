@@ -142,8 +142,8 @@
           class="slide"
           role="group"
           aria-roledescription="slide"
-          aria-label={`${index + 1} of ${slides.length}`}
-          class:is-active={slidesActiveIndex === index}
+          aria-label={`Slide ${index + 1} of ${slides.length}`}
+          aria-hidden={slidesActiveIndex === index ? 'false' : 'true'}
         >
           {#each slide as { component, props }}
             <svelte:component this={component} {...props} />
@@ -155,7 +155,7 @@
       <button
         bind:this={buttonPrevEl}
         aria-controls={`${id}_slides`}
-        aria-label="Previous slide"
+        aria-label={slidesActiveIndex > 0 ? `Previous slide ${slidesActiveIndex} of ${slides.length}` : undefined}
         aria-disabled={slidesActiveIndex === 0}
         on:click={handleButtonPrev}
         on:keydown={handleButtonKeydown}
@@ -180,7 +180,9 @@
       <button
         bind:this={buttonNextEl}
         aria-controls={`${id}_slides`}
-        aria-label="Next slide"
+        aria-label={slidesActiveIndex < slides.length - 1
+          ? `Next slide ${slidesActiveIndex + 2} of ${slides.length}`
+          : undefined}
         aria-disabled={slidesActiveIndex === slides.length - 1}
         on:click={handleButtonNext}
         on:keydown={handleButtonKeydown}
@@ -191,8 +193,8 @@
       </button>
     </div>
   </section>
-  <div class="hint" role="none" title={`This is a group of ${slides.length} slides`} on:click={handleHintClick}>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.22 180.12">
+  <div class="hint" title={`This is a group of ${slides.length} slides`} tabindex="-1" on:click={handleHintClick}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.22 180.12" role="none">
       <rect fill="currentColor" x="53.14" y="32.76" width="96.09" height="96.09" />
       <polygon
         fill="currentColor"
@@ -252,7 +254,7 @@
     cursor: pointer;
   }
 
-  .slide.is-active {
+  .slide[aria-hidden='false'] {
     cursor: grab;
   }
 
