@@ -3,7 +3,7 @@ import { parse as parseImage } from './components/Image/utils';
 import { parse as parseSimple } from './components/Simple/utils';
 import { parse as parseQuote } from './components/Quote/utils';
 
-const CHUNKING_SELECTOR = '[data-mount][id^="-"]';
+const CHUNKING_SELECTOR = '[data-mount][id^="br"]';
 
 const getChunks = (el: Element) => {
   const children = Array.from(el.children);
