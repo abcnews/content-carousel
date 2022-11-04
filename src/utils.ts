@@ -62,6 +62,9 @@ export const parseSlides = (el: Element) =>
               config = null;
             }
             break;
+          case 'Image':
+            config = parseImage(el);
+            break;
           default:
             console.debug('Unsupported content', el);
             config = null;
