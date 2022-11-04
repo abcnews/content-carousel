@@ -47,6 +47,7 @@ export const parseSlides = (el: Element) =>
       } else {
         switch (el.getAttribute('data-component')) {
           case 'Heading':
+          case 'List':
             config = parseSimple(el);
             break;
           case 'Blockquote':
