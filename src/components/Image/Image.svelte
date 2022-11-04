@@ -4,8 +4,8 @@
   export let src: string;
   export let title: string;
 
-  $: [, width] = src.match(/width=(\d+)/) || [];
-  $: [, height] = src.match(/height=(\d+)/) || [];
+  $: [, width] = src.match(/cropW=(\d+)/) || [];
+  $: [, height] = src.match(/cropH=(\d+)/) || [];
   $: styleProps = `
     --cc-image-aspect-ratio: ${width} / ${height};
   `;
@@ -30,8 +30,7 @@
   img {
     width: 100%;
     vertical-align: bottom;
-    /* aspect-ratio: var(--cc-image-aspect-ratio); */
-    aspect-ratio: 16 / 9;
+    aspect-ratio: var(--cc-image-aspect-ratio, 16 / 9);
     object-fit: cover;
     -webkit-user-drag: none;
     user-select: none;
