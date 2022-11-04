@@ -7,9 +7,14 @@ import { getTrackFn } from './behaviour';
 import { parseSlides } from './utils';
 
 const CMID = url2cmid(window.location.href);
+const WYSIWYG_TEASER_ONLY_CHILD_SELECTOR = '[data-component="LegacyWysiwyg"]:first-child:last-child';
 
 const createAppFromDecoy = (decoyEl: Element, index: number, _decoyEls: Element[]) => {
-  const slides = parseSlides(decoyEl);
+  // The #startcarousel and #endcarousel markers can either be wrapped around the bare content,
+  // or a single embedded WYSIWYG teaser document that contains the content. Either way, we are
+  // going to replace the entire decoy contents with the carousel.
+  const contentRootEl = decoyEl.querySelector(WYSIWYG_TEASER_ONLY_CHILD_SELECTOR) || decoyEl;
+  const slides = parseSlides(contentRootEl);
 
   decoyEl.innerHTML = '';
 
