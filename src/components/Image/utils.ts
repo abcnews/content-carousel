@@ -7,7 +7,7 @@ const getText = (el: Element, selector: string) =>
   ((el.querySelector(selector) ?? EMPTY_NODE).textContent ?? '').trim();
 
 export const parse = (el: Element) => {
-  const imgEl = el.querySelector('img') as HTMLImageElement;
+  const imgEl = el.tagName === 'IMG' ? el : (el.querySelector('img') as HTMLImageElement);
   const caption = getText(el, 'figcaption');
   const cite = getText(el, 'figcaption cite');
   const byline = getText(el, 'figcaption cite :first-child');
