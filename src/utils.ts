@@ -2,6 +2,7 @@ import { ComponentConfig, Slide } from './components/Carousel/types';
 import { parse as parseImage } from './components/Image/utils';
 import { parse as parseSimple } from './components/Simple/utils';
 import { parse as parseQuote } from './components/Quote/utils';
+import { parse as parseAudio } from './components/Audio/utils';
 
 const CHUNKING_SELECTOR = '[data-mount][id^="br"]';
 
@@ -33,11 +34,11 @@ const getChunks = (el: Element) => {
 
 export const parseSlides = (el: Element) =>
   getChunks(el).reduce<Slide[]>((slides, chunk) => {
+    console.log('chunks', chunk);
     const slide: Slide = [];
+    let config: ComponentConfig | null;
 
     chunk.forEach(el => {
-      let config: ComponentConfig | null;
-
       if (!el.hasAttribute('data-component')) {
         if (el.textContent && el.textContent.trim().length > 0) {
           config = parseSimple(el);
@@ -59,6 +60,9 @@ export const parseSlides = (el: Element) =>
           case 'Figure':
             if ((el.getAttribute('data-uri') || '').indexOf('coremedia://image') === 0) {
               config = parseImage(el);
+            } else if ((el.getAttribute('data-uri') || '').indexOf('coremedia://audio') === 0) {
+              console.log('audio', el);
+              config = parseAudio(el);
             } else {
               config = null;
             }

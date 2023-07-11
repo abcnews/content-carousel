@@ -1,3 +1,4 @@
+// import 'dotenv/config'
 import { proxy } from '@abcnews/dev-proxy';
 import { requestDOMPermit } from '@abcnews/env-utils';
 const { url2cmid } = require('@abcnews/url2cmid');
@@ -14,6 +15,7 @@ const createAppFromDecoy = (decoyEl: Element, index: number, _decoyEls: Element[
   // or a single embedded WYSIWYG teaser document that contains the content. Either way, we are
   // going to replace the entire decoy contents with the carousel.
   const contentRootEl = decoyEl.querySelector(WYSIWYG_TEASER_ONLY_CHILD_SELECTOR) || decoyEl;
+
   const slides = parseSlides(contentRootEl);
 
   decoyEl.innerHTML = '';
