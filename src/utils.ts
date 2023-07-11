@@ -2,6 +2,7 @@ import { ComponentConfig, Slide } from './components/Carousel/types';
 import { parse as parseImage } from './components/Image/utils';
 import { parse as parseSimple } from './components/Simple/utils';
 import { parse as parseQuote } from './components/Quote/utils';
+import { parse as parseAudio } from './components/Audio/utils';
 
 const CHUNKING_SELECTOR = '[data-mount][id^="br"]';
 
@@ -61,7 +62,7 @@ export const parseSlides = (el: Element) =>
               config = parseImage(el);
             } else if ((el.getAttribute('data-uri') || '').indexOf('coremedia://audio') === 0) {
               console.log('audio', el);
-              config = parseSimple(el);
+              config = parseAudio(el);
             } else {
               config = null;
             }

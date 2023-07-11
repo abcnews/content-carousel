@@ -8,3 +8,5 @@
 # misc
 .DS_Store
 npm-debug.log
+
+.env
