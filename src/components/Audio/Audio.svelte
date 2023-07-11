@@ -33,7 +33,7 @@
 <style lang="scss">
   audio {
     width: 100%;
-    height: 50px;
+    height: 54px;
     background-color: #f2f2f2;
     border: 1px solid #ccc;
     padding: 10px;
