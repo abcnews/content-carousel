@@ -18,12 +18,15 @@
 
   const fetchAudio = async () => {
     const audio: Audio = (await fetchOne({ id: cmid || undefined, type: 'audio' })) as Audio;
+    console.log(audio);
     const file = audio.media.audio.renditions.files[0];
     return file;
   };
 </script>
 
-{#await fetchAudio() then file}
+{#await fetchAudio()}
+  <div />
+{:then file}
   <audio controls>
     <source src={file.url} type={file.MIMEType} />
     Download <a href={file.url}>audio</a>.
