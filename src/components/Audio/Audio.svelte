@@ -44,6 +44,11 @@
   };
 
   const handleClick = () => {
+    // console.log(tapped)
+    tapped = true;
+
+    // tick();
+
     match(audioRef.readyState)
       .when(
         state => state >= 4,
@@ -55,7 +60,6 @@
         });
       });
 
-    tapped = true;
     playingOnSlideIndex = slidesActiveIndex;
   };
 
@@ -82,7 +86,7 @@
       </button>
     {/if}
 
-    <audio class="audio-element" controls bind:this={audioRef}>
+    <audio class="audio-element" controls bind:this={audioRef} preload="auto">
       <source src={audio.file.url} type={audio.file.MIMEType} />
       <!-- Fallback -->
       Download <a href={audio.file.url}>audio</a>.
