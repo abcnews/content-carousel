@@ -1,6 +1,8 @@
 import { SvelteComponentTyped } from 'svelte';
 import Audio from './Audio.svelte';
 
+
+// Returns the last digits in a string, or null if there are none.
 function extractDigits(str: string | null) {
   if (str === null) return null;
   const match = str.match(/\d+$/);
