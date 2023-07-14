@@ -34,7 +34,6 @@ const getChunks = (el: Element) => {
 
 export const parseSlides = (el: Element) =>
   getChunks(el).reduce<Slide[]>((slides, chunk) => {
-    console.log('chunks', chunk);
     const slide: Slide = [];
     let config: ComponentConfig | null;
 
@@ -61,7 +60,6 @@ export const parseSlides = (el: Element) =>
             if ((el.getAttribute('data-uri') || '').indexOf('coremedia://image') === 0) {
               config = parseImage(el);
             } else if ((el.getAttribute('data-uri') || '').indexOf('coremedia://audio') === 0) {
-              console.log('audio', el);
               config = parseAudio(el);
             } else {
               config = null;
