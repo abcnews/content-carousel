@@ -60,9 +60,9 @@
       track('directional-navigation', `${interactionMethod}-${direction === -1 ? 'prev' : 'next'}`);
     }
   };
-  const handleButtonPrev = (event: KeyboardEvent | CustomEvent) =>
+  const handleButtonPrev = (event: MouseEvent | KeyboardEvent | CustomEvent) =>
     goInDirection(-1, event.detail === 1 ? 'mouse' : 'keyboard');
-  const handleButtonNext = (event: KeyboardEvent | CustomEvent) =>
+  const handleButtonNext = (event: MouseEvent | KeyboardEvent | CustomEvent) =>
     goInDirection(1, event.detail === 1 ? 'mouse' : 'keyboard');
   const handleButtonKeydown = (event: KeyboardEvent) => {
     switch (event.key) {
@@ -146,7 +146,7 @@
           aria-hidden={slidesActiveIndex === index ? 'false' : 'true'}
         >
           {#each slide as { component, props }}
-            <svelte:component this={component} {...props} />
+            <svelte:component this={component} {...props} {slidesActiveIndex} />
           {/each}
         </div>
       {/each}

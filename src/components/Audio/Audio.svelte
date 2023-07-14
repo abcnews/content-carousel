@@ -1,6 +1,7 @@
 <script lang="ts">
   // Props
   export let cmid: string | null;
+  export let slidesActiveIndex: number | null;
 
   // Imports
   import { fetchOne } from '@abcnews/terminus-fetch';
@@ -15,6 +16,7 @@
 
   // State
   let tapped = false;
+  let playingOnSlideIndex: number | null = null;
 
   type Audio = {
     duration: number;
@@ -33,7 +35,6 @@
 
   const fetchAudio = async () => {
     const [error, result] = await wrap(fetchOne({ id: cmid || undefined, type: 'audio' }));
-    console.log(result);
     if (error) throw error;
 
     const audio: Audio = result as Audio;
@@ -55,7 +56,13 @@
       });
 
     tapped = true;
+    playingOnSlideIndex = slidesActiveIndex;
   };
+
+  $: if (playingOnSlideIndex !== slidesActiveIndex) {
+    tapped = false;
+    audioRef?.pause();
+  }
 </script>
 
 <div style="--audio-display: {tapped ? 'block' : 'none'}">
@@ -156,7 +163,7 @@
 
   .audio-title {
     color: var(--colour-aa, #aaa);
-    margin-top: 1rem;
+    margin-top: 0.8rem;
     letter-spacing: 0.03125rem;
     font-weight: var(--typography-font-weight, 400);
     line-height: 1.25rem;

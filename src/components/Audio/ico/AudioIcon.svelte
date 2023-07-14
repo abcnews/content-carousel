@@ -24,7 +24,6 @@
 
 <style lang="scss">
   svg {
-    // remove space at bottom
     display: block;
     margin: 0;
   }
