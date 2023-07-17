@@ -4,12 +4,12 @@
   export let slidesActiveIndex: number | null;
 
   // Imports
-  import { fetchOne } from '@abcnews/terminus-fetch';
-  import wrap from 'await-to-js';
-  import { match, P } from 'ts-pattern';
+  import { fetchOne } from "@abcnews/terminus-fetch";
+  import wrap from "await-to-js";
+  import { match, P } from "ts-pattern";
 
   // Components
-  import AudioIcon from './ico/AudioIcon.svelte';
+  import AudioIcon from "./ico/AudioIcon.svelte";
 
   // Refs
   let audioRef: HTMLAudioElement;
@@ -17,6 +17,7 @@
   // State
   let tapped = false;
   let playingOnSlideIndex: number | null = null;
+  let showCaption: boolean = false;
 
   type Audio = {
     byLine: {
@@ -24,6 +25,7 @@
     };
     duration: number;
     title: string;
+    sourceSystem: string;
     media: {
       audio: {
         renditions: {
@@ -37,15 +39,24 @@
   };
 
   const fetchAudio = async (cmid: string) => {
-    const [error, result] = await wrap(fetchOne({ id: cmid || undefined, type: 'audio' }));
-    console.log(result);
+    const [error, result] = await wrap(
+      fetchOne({ id: cmid || undefined, type: "audio" })
+    );
     if (error) throw error;
 
     const audio: Audio = result as Audio;
+    console.log(audio);
     const file = audio.media.audio.renditions.files[0];
-    const byLine = audio.byLine.plain;
+    const byLine = audio?.byLine?.plain;
+    const showCaption = audio?.sourceSystem === "showcaption";
 
-    return { file: file, duration: audio.duration, title: audio.title, byLine: byLine };
+    return {
+      file: file,
+      duration: audio.duration,
+      title: audio.title,
+      byLine: byLine,
+      showCaption: showCaption
+    };
   };
 
   const handleClick = () => {
@@ -60,7 +71,7 @@
         () => audioRef.play()
       )
       .otherwise(() => {
-        audioRef.addEventListener('canplay', () => {
+        audioRef.addEventListener("canplay", () => {
           audioRef.play();
         });
       });
@@ -80,7 +91,12 @@
     <div class="fetching-audio-message">Fetching audio...</div>
   {:then audio}
     {#if !tapped}
-      <button class="tap-to-play" on:click={handleClick}>
+      <button
+        class="tap-to-play"
+        on:click={handleClick}
+        title={audio.byLine ? `${audio.title} by ${audio.byLine}` : `${audio.title}`}
+        aria-label="Play Audio. Duration: {audio.duration} seconds"
+      >
         <span class="listen-icon">
           <AudioIcon />
         </span>
@@ -97,7 +113,13 @@
       Download <a href={audio.file.url}>audio</a>.
     </audio>
 
-    <div class="audio-title"><span>{audio.title}</span><span class="audio-byline">({audio.byLine})</span></div>
+    {#if audio.showCaption}
+      <div class="audio-title">
+        <span>{audio.title}</span>{#if audio.byLine}<span class="audio-byline"
+            >({audio.byLine})</span
+          >{/if}
+      </div>
+    {/if}
   {:catch error}
     <div>{error.message}</div>
   {/await}
@@ -123,7 +145,7 @@
     color: white;
     border: none;
     height: 3.25rem;
-    font-family: var(--dls-font-stack-sans, 'abcsans');
+    font-family: var(--dls-font-stack-sans, "abcsans");
     font-weight: var(--typography-font-weight, bold);
     letter-spacing: 2px;
     font-size: 0.75rem;
@@ -139,7 +161,7 @@
     color: white;
     border: none;
     height: 3.25rem;
-    font-family: var(--dls-font-stack-sans, 'abcsans');
+    font-family: var(--dls-font-stack-sans, "abcsans");
     font-weight: var(--typography-font-weight, bold);
     letter-spacing: 2px;
     font-size: 0.75rem;
