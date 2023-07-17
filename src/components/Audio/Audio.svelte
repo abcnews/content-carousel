@@ -45,7 +45,6 @@
     if (error) throw error;
 
     const audio: Audio = result as Audio;
-    console.log(audio);
     const file = audio.media.audio.renditions.files[0];
     const byLine = audio?.byLine?.plain;
     const showCaption = audio?.sourceSystem === "showcaption";
@@ -60,10 +59,7 @@
   };
 
   const handleClick = () => {
-    // console.log(tapped)
     tapped = true;
-
-    // tick();
 
     match(audioRef.readyState)
       .when(

@@ -22,7 +22,7 @@
 		}
 	},
 	"devDependencies": {
-		"@abcnews/aunty": "^13.2.2",
+		"@abcnews/aunty": "^14.0.0",
 		"@testing-library/svelte": "^3.0.3",
 		"@types/jest": "^27.0.2",
 		"@types/webpack-env": "^1.16.3",
