@@ -1,6 +1,6 @@
 <script lang="ts">
   // Props
-  export let cmid: string | null;
+  export let cmid: string;
   export let slidesActiveIndex: number | null;
 
   // Imports
@@ -19,6 +19,9 @@
   let playingOnSlideIndex: number | null = null;
 
   type Audio = {
+    byLine: {
+      plain: string;
+    };
     duration: number;
     title: string;
     media: {
@@ -33,14 +36,16 @@
     };
   };
 
-  const fetchAudio = async () => {
+  const fetchAudio = async (cmid: string) => {
     const [error, result] = await wrap(fetchOne({ id: cmid || undefined, type: 'audio' }));
+    console.log(result);
     if (error) throw error;
 
     const audio: Audio = result as Audio;
     const file = audio.media.audio.renditions.files[0];
+    const byLine = audio.byLine.plain;
 
-    return { file: file, duration: audio.duration, title: audio.title };
+    return { file: file, duration: audio.duration, title: audio.title, byLine: byLine };
   };
 
   const handleClick = () => {
@@ -71,7 +76,7 @@
 
 <div style="--audio-display: {tapped ? 'block' : 'none'}">
   <slot />
-  {#await fetchAudio()}
+  {#await fetchAudio(cmid)}
     <div class="fetching-audio-message">Fetching audio...</div>
   {:then audio}
     {#if !tapped}
@@ -92,7 +97,7 @@
       Download <a href={audio.file.url}>audio</a>.
     </audio>
 
-    <div class="audio-title">{audio.title}</div>
+    <div class="audio-title"><span>{audio.title}</span><span class="audio-byline">({audio.byLine})</span></div>
   {:catch error}
     <div>{error.message}</div>
   {/await}
@@ -172,5 +177,9 @@
     font-weight: var(--typography-font-weight, 400);
     line-height: 1.25rem;
     font-size: 0.75rem;
+  }
+
+  .audio-byline {
+    padding-inline-start: 4px;
   }
 </style>
