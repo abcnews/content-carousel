@@ -47,14 +47,14 @@
     const audio: Audio = result as Audio;
     const file = audio.media.audio.renditions.files[0];
     const byLine = audio?.byLine?.plain;
-    const showCaption = audio?.sourceSystem === "showcaption";
+    const hideCaption = audio?.sourceSystem === "hidecaption";
 
     return {
       file: file,
       duration: audio.duration,
       title: audio.title,
       byLine: byLine,
-      showCaption: showCaption
+      hideCaption: hideCaption
     };
   };
 
@@ -109,7 +109,7 @@
       Download <a href={audio.file.url}>audio</a>.
     </audio>
 
-    {#if audio.showCaption}
+    {#if !audio.hideCaption}
       <div class="audio-title">
         <span>{audio.title}</span>{#if audio.byLine}<span class="audio-byline"
             >({audio.byLine})</span
