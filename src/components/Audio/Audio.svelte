@@ -100,7 +100,7 @@
       </button>
     {/if}
 
-    <audio class="audio-element" controls bind:this={audioRef} preload="metadata">
+    <audio class="audio-element" controls bind:this={audioRef} preload="auto">
       <source src={audio.file.url} type={audio.file.MIMEType} />
       <!-- Fallback -->
       Download <a href={audio.file.url}>audio</a>.
