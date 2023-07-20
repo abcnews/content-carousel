@@ -2,10 +2,12 @@
   // Props
   export let cmid: string;
   export let slidesActiveIndex: number | null;
+  export let index: number;
 
   // Imports
   import { fetchOne } from "@abcnews/terminus-fetch";
   import wrap from "await-to-js";
+  import { tick } from "svelte";
   import { match, P } from "ts-pattern";
 
   // Components
@@ -17,7 +19,7 @@
   // State
   let tapped = false;
   let playingOnSlideIndex: number | null = null;
-  let showCaption: boolean = false;
+  let isActiveSlide: boolean = false;
 
   type Audio = {
     byLine: {
@@ -58,27 +60,20 @@
     };
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     tapped = true;
-
-    match(audioRef.readyState)
-      .when(
-        state => state >= 4,
-        () => audioRef.play()
-      )
-      .otherwise(() => {
-        audioRef.addEventListener("canplay", () => {
-          audioRef.play();
-        });
-      });
-
+    audioRef.play();
     playingOnSlideIndex = slidesActiveIndex;
+    await tick();
+    audioRef.focus();
   };
 
   $: if (playingOnSlideIndex !== slidesActiveIndex) {
     tapped = false;
     audioRef?.pause();
   }
+
+  $: slidesActiveIndex === index ? (isActiveSlide = true) : (isActiveSlide = false);
 </script>
 
 <div style="--audio-display: {tapped ? 'block' : 'none'}">
@@ -92,6 +87,8 @@
         on:click={handleClick}
         title={audio.byLine ? `${audio.title} by ${audio.byLine}` : `${audio.title}`}
         aria-label="Play Audio. Duration: {audio.duration} seconds"
+        aria-hidden={isActiveSlide ? "false" : "true"}
+        tabindex={isActiveSlide ? 0 : -1}
       >
         <span class="listen-icon">
           <AudioIcon />
@@ -103,7 +100,7 @@
       </button>
     {/if}
 
-    <audio class="audio-element" controls bind:this={audioRef} preload="auto">
+    <audio class="audio-element" controls bind:this={audioRef} preload="metadata">
       <source src={audio.file.url} type={audio.file.MIMEType} />
       <!-- Fallback -->
       Download <a href={audio.file.url}>audio</a>.

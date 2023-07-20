@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type { TrackFn } from '../../behaviour';
+  import type { TrackFn } from "../../behaviour";
 
   type Position = {
     x: number;
@@ -16,7 +16,9 @@
       swipestart?: (event: CustomEvent<Position> & { target: EventTarget & T }) => any;
       swipemove?: (event: CustomEvent<PositionDiff> & { target: EventTarget & T }) => any;
       swipeend?: (event: CustomEvent<Position> & { target: EventTarget & T }) => any;
-      swipethreshold?: (event: CustomEvent<{ direction: -1 | 1 }> & { target: EventTarget & T }) => any;
+      swipethreshold?: (
+        event: CustomEvent<{ direction: -1 | 1 }> & { target: EventTarget & T }
+      ) => any;
     }
   }
 
@@ -28,10 +30,10 @@
 </script>
 
 <script lang="ts">
-  import { onMount, SvelteComponentTyped } from 'svelte';
-  import { swipeable } from '../../actions/swipeable';
-  import Image from '../Image/Image.svelte';
-  import type { Slide } from './types';
+  import { onMount, SvelteComponentTyped } from "svelte";
+  import { swipeable } from "../../actions/swipeable";
+  import Image from "../Image/Image.svelte";
+  import type { Slide } from "./types";
 
   export let slides: Slide[] = [];
   export let track: TrackFn = NOOP_TRACK_FN;
@@ -57,20 +59,23 @@
   };
   const goInDirection = (direction: number, interactionMethod: string) => {
     if (goToIndex(slidesActiveIndex + direction)) {
-      track('directional-navigation', `${interactionMethod}-${direction === -1 ? 'prev' : 'next'}`);
+      track(
+        "directional-navigation",
+        `${interactionMethod}-${direction === -1 ? "prev" : "next"}`
+      );
     }
   };
   const handleButtonPrev = (event: MouseEvent | KeyboardEvent | CustomEvent) =>
-    goInDirection(-1, event.detail === 1 ? 'mouse' : 'keyboard');
+    goInDirection(-1, event.detail === 1 ? "mouse" : "keyboard");
   const handleButtonNext = (event: MouseEvent | KeyboardEvent | CustomEvent) =>
-    goInDirection(1, event.detail === 1 ? 'mouse' : 'keyboard');
+    goInDirection(1, event.detail === 1 ? "mouse" : "keyboard");
   const handleButtonKeydown = (event: KeyboardEvent) => {
     switch (event.key) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         handleButtonPrev(event);
         buttonPrevEl.focus();
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         handleButtonNext(event);
         buttonNextEl.focus();
         break;
@@ -78,45 +83,55 @@
         break;
     }
   };
-  const handleSlidesSwipeMove = (event: CustomEvent) => (slidesSwipeOffsetPx = event.detail.dx);
-  const handleSlidesSwipeThreshold = (event: CustomEvent) => goInDirection(event.detail.direction * -1, 'swipe');
+  const handleSlidesSwipeMove = (event: CustomEvent) =>
+    (slidesSwipeOffsetPx = event.detail.dx);
+  const handleSlidesSwipeThreshold = (event: CustomEvent) =>
+    goInDirection(event.detail.direction * -1, "swipe");
   const handleSlidesSwipeEnd = () => (slidesSwipeOffsetPx = 0);
   const handleHintClick = () => (triedToClickHint = true);
 
   $: farthestIndexReached = Math.max(slidesActiveIndex, farthestIndexReached);
-  $: viewportBaseWidthDiffPx = (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
-  $: isInMultiColumnLayout = viewportBaseWidthDiffPx > PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX;
-  $: slidesActiveIndexOffsetPct = (slidesActiveIndex + (slidesActiveIndex * SLIDES_GAP_PX) / baseWidthPx) * -100;
+  $: viewportBaseWidthDiffPx =
+    (document.documentElement.clientWidth || window.innerWidth) - baseWidthPx;
+  $: isInMultiColumnLayout =
+    viewportBaseWidthDiffPx > PRESENTATION_LAYER_SIDEBAR_ESTIMATED_WIDTH_PX;
+  $: slidesActiveIndexOffsetPct =
+    (slidesActiveIndex + (slidesActiveIndex * SLIDES_GAP_PX) / baseWidthPx) * -100;
   $: doesActiveSlideStartWithImage =
     slides[slidesActiveIndex][0].component === (Image as unknown as SvelteComponentTyped);
   $: baseStyle = `
     --cc-base-width: ${baseWidthPx}px;
     --cc-slides-gap: ${SLIDES_GAP_PX}px;
     --cc-slides-translate-x: calc(${slidesActiveIndexOffsetPct}% + ${slidesSwipeOffsetPx}px);
-    --cc-slides-transition-duration: ${slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S}s;
+    --cc-slides-transition-duration: ${
+      slidesSwipeOffsetPx !== 0 ? 0 : baseWidthPx / SLIDES_TRANSLATION_PX_S
+    }s;
     --cc-slide-padding-vertical: ${isInMultiColumnLayout ? 24 : 16}px;
     --cc-slide-padding-horizontal: ${isInMultiColumnLayout ? 32 : 20}px;
     --cc-hint-color: hsl(0deg 0% ${doesActiveSlideStartWithImage ? 90 : 80}%);
-    --cc-hint-mix-blend-mode: ${doesActiveSlideStartWithImage ? 'luminocity' : 'initial'};
+    --cc-hint-mix-blend-mode: ${doesActiveSlideStartWithImage ? "luminocity" : "initial"};
   `;
 
   onMount(() => {
     const listener = (event: Event) => {
-      if (event.type === 'pagehide' || document.visibilityState === 'hidden') {
+      if (event.type === "pagehide" || document.visibilityState === "hidden") {
         stopListening();
-        track('number-slides-seen', String(farthestIndexReached + 1));
-        track('percentage-slides-seen', String(Math.round(((farthestIndexReached + 1) / slides.length) * 100)));
-        track('tried-to-click-hint', triedToClickHint ? 'yes' : 'no');
+        track("number-slides-seen", String(farthestIndexReached + 1));
+        track(
+          "percentage-slides-seen",
+          String(Math.round(((farthestIndexReached + 1) / slides.length) * 100))
+        );
+        track("tried-to-click-hint", triedToClickHint ? "yes" : "no");
       }
     };
 
     const stopListening = () => {
-      document.removeEventListener('visibilitychange', listener);
-      document.removeEventListener('pagehide', listener);
+      document.removeEventListener("visibilitychange", listener);
+      document.removeEventListener("pagehide", listener);
     };
 
-    document.addEventListener('visibilitychange', listener);
-    document.addEventListener('pagehide', listener);
+    document.addEventListener("visibilitychange", listener);
+    document.addEventListener("pagehide", listener);
 
     return () => {
       stopListening();
@@ -125,7 +140,12 @@
 </script>
 
 <div class="base" bind:clientWidth={baseWidthPx} style={baseStyle}>
-  <section class="layout" role="region" aria-roledescription="carousel" aria-label="Slides">
+  <section
+    class="layout"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Slides"
+  >
     <div
       id={`${id}_slides`}
       class="slides"
@@ -143,10 +163,10 @@
           role="group"
           aria-roledescription="slide"
           aria-label={`Slide ${index + 1} of ${slides.length}`}
-          aria-hidden={slidesActiveIndex === index ? 'false' : 'true'}
+          aria-hidden={slidesActiveIndex === index ? "false" : "true"}
         >
           {#each slide as { component, props }}
-            <svelte:component this={component} {...props} {slidesActiveIndex} />
+            <svelte:component this={component} {...props} {slidesActiveIndex} {index} />
           {/each}
         </div>
       {/each}
@@ -155,7 +175,9 @@
       <button
         bind:this={buttonPrevEl}
         aria-controls={`${id}_slides`}
-        aria-label={slidesActiveIndex > 0 ? `Previous slide ${slidesActiveIndex} of ${slides.length}` : undefined}
+        aria-label={slidesActiveIndex > 0
+          ? `Previous slide ${slidesActiveIndex} of ${slides.length}`
+          : undefined}
         aria-disabled={slidesActiveIndex === 0}
         on:click={handleButtonPrev}
         on:keydown={handleButtonKeydown}
@@ -193,7 +215,12 @@
       </button>
     </div>
   </section>
-  <div class="hint" title={`This is a group of ${slides.length} slides`} tabindex="-1" on:click={handleHintClick}>
+  <div
+    class="hint"
+    title={`This is a group of ${slides.length} slides`}
+    tabindex="-1"
+    on:click={handleHintClick}
+  >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.22 180.12" role="none">
       <rect fill="currentColor" x="53.14" y="32.76" width="96.09" height="96.09" />
       <polygon
@@ -254,14 +281,15 @@
     cursor: pointer;
   }
 
-  .slide[aria-hidden='false'] {
+  .slide[aria-hidden="false"] {
     cursor: grab;
   }
 
   .controls {
     position: relative;
     margin-top: calc(var(--cc-slide-padding-vertical) / -2);
-    padding: 0 calc(var(--cc-slide-padding-horizontal) / 3 * 2) calc(var(--cc-slide-padding-vertical) / 2);
+    padding: 0 calc(var(--cc-slide-padding-horizontal) / 3 * 2)
+      calc(var(--cc-slide-padding-vertical) / 2);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -282,11 +310,11 @@
     color: inherit;
   }
 
-  .controls button[aria-disabled='false'] {
+  .controls button[aria-disabled="false"] {
     cursor: pointer;
   }
 
-  .controls button[aria-disabled='false']:focus {
+  .controls button[aria-disabled="false"]:focus {
     background-color: var(--cc-theme-control-focus-background-color, var(--tint-5));
   }
 
@@ -297,7 +325,7 @@
     transition: opacity var(--cc-slides-transition-duration) ease-out;
   }
 
-  .controls button[aria-disabled='true'] svg {
+  .controls button[aria-disabled="true"] svg {
     opacity: 0.2;
   }
 
